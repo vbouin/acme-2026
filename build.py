@@ -42,6 +42,7 @@ SOURCES = {
     # les données : relues à leur source, jamais copiées en clair dans ce dossier
     "demo": CLAUDE / "plateforme-qual" / "app" / "exports" / "ACME_VERBATIM_demo_NORD_compresse.html",
     "proposition": CLAUDE / "acme-propale-verbatim" / "proposition.html",
+    "bbr": CLAUDE / "bbr-intel" / "bbr-showroom-intelligence.html",
 }
 CODE = ICI / "CODE-ACCES-NE-PAS-PUBLIER.txt"
 VENV_PY = CLAUDE / "pseudo-local" / ".venv" / "bin" / "python3"
@@ -87,11 +88,6 @@ MEDIAS = {
     "createurs": [
         ("media/alpine-film.jpg", "L'ouverture du livrable : le récit d'abord, la gamme comparée à droite, les chiffres du dispositif en bas."),
         ("media/alpine-vehicules.jpg", "Synthèse par véhicule, agrégée depuis 62 vidéos de créateurs sur 9 marchés."),
-    ],
-    "decision": [
-        ("shots/site-04-decision.jpg", "Décider en six semaines, pas en six mois."),
-        ("shots/site-05-configurateur.jpg", "Le configurateur : quatre questions, un dispositif."),
-        ("shots/site-06-dispositif.jpg", "Le dispositif recommandé, son calendrier, ses livrables ; chiffrage sous 48 h."),
     ],
 }
 
@@ -339,6 +335,10 @@ def sous_hub_reserve() -> str:
         ("small-van.html", "Small Van — l'histoire digitale", "étude exploratoire, mai 2026",
          "Le livrable complet : vingt-huit scènes, le véhicule qui se construit au défilement, cinq univers métier, trois "
          "concepts. Fichier lourd (12 Mo), à ouvrir sur ordinateur. Le commanditaire y est nommé."),
+        ("showroom.html", "Showroom Intelligence — cinq concurrents face au concept", "clinique de juin 2026",
+         "Deux regards confrontés voiture par voiture : ce que la salle a dit en clinique, ce que le marché en dit "
+         "(avis, presse, créateurs, ventes). Fichier lourd, à ouvrir sur ordinateur. Comptes et véhicules concurrents "
+         "nommés."),
     ]
     blocs = "".join(f"""
       <article class="livrable">
@@ -356,8 +356,8 @@ def sous_hub_reserve() -> str:
   <div class="container">
     <div class="section-head">
       <div class="eyebrow">— Espace réservé · déverrouillé</div>
-      <h2 class="display">Quatre documents,<br>sous code.</h2>
-      <p class="lead">Ils nomment des clients ou des terrains sous accord de confidentialité. Ils ne quittent pas cet espace. Le code reste valable pour les quatre tant que l'onglet est ouvert.</p>
+      <h2 class="display">Cinq documents,<br>sous code.</h2>
+      <p class="lead">Ils nomment des clients ou des terrains sous accord de confidentialité. Ils ne quittent pas cet espace. Le code reste valable pour les cinq tant que l'onglet est ouvert.</p>
     </div>
     <div class="livrables">{blocs}
     </div>
@@ -475,9 +475,69 @@ def proposition_autonome() -> str:
     return re.sub(r'(?:src|poster)="assets/([^"]+)"', data_uri, t)
 
 
+def decision_scellee() -> str:
+    """Le détail de Décision rapide : les captures du configurateur, embarquées en
+    data: (jamais servies en clair à leur propre URL), plus le lien vers l'outil en
+    ligne. Une page complète (document.write remplace tout le document déchiffré)."""
+    import base64
+    slides = []
+    for nom, legende in [
+        ("site-04-decision.jpg", "Décider en six semaines, pas en six mois."),
+        ("site-05-configurateur.jpg", "Le configurateur : quatre questions, un dispositif."),
+        ("site-06-dispositif.jpg", "Le dispositif recommandé, son calendrier, ses livrables ; chiffrage sous 48 h."),
+    ]:
+        p = ICI / "shots" / nom
+        if not p.exists():
+            print(f"   ⚠ capture absente : shots/{nom}", file=sys.stderr)
+            continue
+        b64 = base64.b64encode(p.read_bytes()).decode("ascii")
+        slides.append(f'<figure class="slide"><img src="data:image/jpeg;base64,{b64}" alt=""><figcaption>{esc(legende)}</figcaption></figure>')
+    slider = ""
+    if slides:
+        slider = ('<div class="slider" data-slider tabindex="0" aria-label="Écrans du configurateur">'
+                   f'<div class="slider-track">{"".join(slides)}</div>'
+                   '<div class="slider-bar"><button type="button" class="slider-btn slider-prev" aria-label="Précédent">←</button>'
+                   f'<div class="slider-dots"></div><span class="slider-count mono">1 / {len(slides)}</span>'
+                   '<button type="button" class="slider-btn slider-next" aria-label="Suivant">→</button></div></div>')
+    corps = f"""
+<header class="nav"><div class="container nav-inner">
+  <a class="nav-logo" href="../index.html#decision"><img src="../assets/acme-noir-h.svg" alt="ACMÉ"></a>
+  <nav class="nav-links"><a href="../index.html">← Retour à la page</a></nav>
+</div></header>
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow">— Décision rapide · déverrouillé</div>
+      <h2 class="display">Composer votre dispositif.</h2>
+      <p class="lead">Le socle ne bouge pas : cadrage, recrutement, terrain conduit par un consultant senior,
+        transcripts intégraux. Les livrables sont en options : plateforme VERBATIM, top lines, analyse complète,
+        typologies, atelier de décision.</p>
+    </div>
+    <div class="split">
+      <div class="split-media">{slider}</div>
+      <div class="split-texte">
+        <div class="lbl">Le configurateur</div>
+        <p>Il qualifie votre besoin en quatre questions et renvoie le dispositif recommandé, son calendrier et
+          la liste exacte des livrables. Aucun prix n'est affiché à un visiteur : il produit un schéma et un
+          calendrier, puis renvoie vers un chiffrage sous 48 heures.</p>
+        <div class="actions">
+          <a class="btn btn--dark" href="https://vbouin.github.io/acme-site/v5.2/decision-rapide.html" target="_blank" rel="noopener">Composer votre dispositif <span class="ar">→</span></a>
+        </div>
+        <p class="cap">Outil en ligne, hébergé à part, non indexé.</p>
+      </div>
+    </div>
+  </div>
+</section>
+<footer class="pied"><div class="container"><span class="mono">Accès protégé · {esc(DATE)}</span></div></footer>
+<script src="../assets/hub.js"></script>
+"""
+    return tete("Décision rapide — le configurateur", "../") + f"<body>{corps}</body></html>"
+
+
 def donnees(tout: bool) -> None:
-    """Ce qui porte de la matière d'étude est chiffré : la démonstration (le corpus
-    des 53 entretiens) et la proposition (ses captures). Avec --tout-chiffre, la page
+    """Ce qui porte de la matière d'étude ou du commercial est chiffré : la
+    démonstration (le corpus des 53 entretiens), la proposition (ses captures) et
+    le détail de Décision rapide (le configurateur). Avec --tout-chiffre, la page
     elle-même l'est aussi."""
     if not assurer_crypto():
         return
@@ -498,6 +558,11 @@ def donnees(tout: bool) -> None:
                 eyebrow="— Proposition", retour="../index.html#verbatim")
     else:
         print(f"   ⚠ source absente : {SOURCES['proposition']}", file=sys.stderr)
+    clair = decision_scellee()
+    residus(clair, "décision rapide")
+    sceller(clair, code, ICI / "decision", "index", "Décision rapide — le configurateur",
+            "Les écrans et le lien du configurateur sont chiffrés. Même code que la démonstration.",
+            eyebrow="— Décision rapide", retour="../index.html#decision")
     if tout:
         clair = hub(retourner=True)
         sceller(clair, code, ICI, "index", "ACMÉ — Notre avenir",
@@ -512,7 +577,7 @@ def reserve() -> None:
     dossier = ICI / "reserve"
     dossier.mkdir(exist_ok=True)
     docs = {
-        "index": ("Espace réservé", "Quatre documents qui nomment des clients ou des terrains sous accord de confidentialité.",
+        "index": ("Espace réservé", "Cinq documents qui nomment des clients ou des terrains sous accord de confidentialité.",
                   sous_hub_reserve()),
     }
     if SOURCES["etude"].exists():
@@ -529,11 +594,17 @@ def reserve() -> None:
     if SOURCES["smallvan"].exists():
         docs["small-van"] = ("Small Van — l'histoire digitale", "Livrable client complet, 12 Mo. Le déchiffrement prend quelques secondes.",
                              SOURCES["smallvan"].read_text(encoding="utf-8"))
+    if SOURCES["bbr"].exists():
+        docs["showroom"] = ("Showroom Intelligence — cinq concurrents face au concept",
+                            "Clinique de juin 2026 : ce que la salle a dit des concurrents, confronté au marché. "
+                            "Document confidentiel, comptes et véhicules nommés. Fichier lourd, le déchiffrement prend "
+                            "quelques secondes.",
+                            charset(SOURCES["bbr"].read_text(encoding="utf-8")))
     for nom, (titre, sous_titre, clair) in docs.items():
         sceller(clair, code, dossier, nom, titre, sous_titre)
-    manquants = [k for k in ("etude", "recommandations", "adr", "small-van") if k not in docs]
+    manquants = [cle for cle in ("etude", "recommandations", "adr", "smallvan", "bbr") if not SOURCES[cle].exists()]
     if manquants:
-        print(f"   ⚠ sources absentes : {manquants}", file=sys.stderr)
+        print(f"   ⚠ sources absentes, document(s) non régénéré(s) : {manquants}", file=sys.stderr)
 
 
 # ---------------------------------------------------------------- annexes
@@ -546,7 +617,9 @@ def annexes() -> None:
         # la table de masquage et la liste de contrôle nomment ce qu'elles protègent
         "scenarios.mjs", "_mots-sensibles.txt",
         # les données ne vivent ici que chiffrées (.bin) : jamais de copie en clair
-        "proposition/assets/", "demo/*.clair.html", ""
+        "proposition/assets/", "demo/*.clair.html",
+        # embarquées en data: dans decision/index.bin ; servies en clair à leur URL, elles annuleraient le chiffrement
+        "shots/site-04-decision.jpg", "shots/site-05-configurateur.jpg", "shots/site-06-dispositif.jpg", ""
     ]), encoding="utf-8")
 
 

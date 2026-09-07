@@ -34,10 +34,11 @@ python3 shoot.py etude          # vignette fixe d'un document
 ## Ce qui est chiffré
 
 Les **données** ne sont jamais servies en clair : la démonstration Concept NORD (le corpus
-des 53 entretiens) et la proposition détaillée (ses captures et vidéos incorporées) sont
-relues à leur source par `build.py`, neutralisées, puis chiffrées en `demo/verbatim-nord.bin`
-et `proposition/index.bin`. Les pages `.html` du même nom ne contiennent que la grille
-d'accès. Même code que l'espace réservé, saisi une seule fois par onglet.
+des 53 entretiens), la proposition détaillée (ses captures et vidéos incorporées) et le détail
+de Décision rapide (les écrans du configurateur + le lien vers l'outil) sont relus à leur
+source par `build.py`, neutralisés, puis chiffrés en `demo/verbatim-nord.bin`,
+`proposition/index.bin` et `decision/index.bin`. Les pages `.html` du même nom ne contiennent
+que la grille d'accès. Même code que l'espace réservé, saisi une seule fois par onglet.
 
 La page « Notre avenir » reste lisible. Pour la chiffrer aussi :
 
@@ -48,7 +49,7 @@ python3 build.py --en-clair        # retour à une page lisible
 
 ## Espace réservé
 
-Un fichier `.bin` par document : `salt (16) | iv (12) | AES-256-GCM`. Clé dérivée du
+Cinq documents désormais (étude concurrentielle, recommandations, ADR, Small Van, Showroom Intelligence). Un fichier `.bin` par document : `salt (16) | iv (12) | AES-256-GCM`. Clé dérivée du
 code par PBKDF2-SHA256, 250 000 itérations. La page `reserve/<doc>.html` ne contient
 que la grille d'accès ; une fois le code saisi, il reste valable pour les quatre
 documents le temps de l'onglet (`sessionStorage`).
