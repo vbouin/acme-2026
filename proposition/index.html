@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<title>La proposition détaillée</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../assets/fonts.css">
+<link rel="stylesheet" href="../assets/hub.css">
+</head>
+<body class="gate">
+<div class="gate-inner">
+  <div class="gate-box">
+    <img src="../assets/acme-blanc-h.svg" alt="ACMÉ">
+    <div class="eyebrow">— Proposition</div>
+    <h1>La proposition détaillée</h1>
+    <p>La proposition et ses captures de la plateforme sont chiffrées. Même code que la démonstration.</p>
+    <form id="form" class="gate-form" autocomplete="off">
+      <input id="pw" type="password" placeholder="Code d'accès" aria-label="Code d'accès" autocomplete="off" required>
+      <button id="btn" type="submit" class="btn btn--light">Déverrouiller</button>
+    </form>
+    <div id="err" class="gate-err" aria-live="polite"></div>
+  </div>
+</div>
+<div class="gate-pied"><span>Le contenu est chiffré dans le fichier servi ; il ne se lit qu'avec le code. <a href="../index.html#verbatim" style="color:inherit">Retour à la page</a></span></div>
+<script>
+const FICHIER = "index.bin", ITER = 250000, CLE = 'acme2026-code';
+async function dechiffrer(code) {
+  const buf = new Uint8Array(await (await fetch(FICHIER, { cache: 'no-store' })).arrayBuffer());
+  const salt = buf.slice(0, 16), iv = buf.slice(16, 28), ct = buf.slice(28);
+  const enc = new TextEncoder();
+  const km = await crypto.subtle.importKey('raw', enc.encode(code), { name: 'PBKDF2' }, false, ['deriveKey']);
+  const key = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations: ITER, hash: 'SHA-256' }, km, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+  const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ct);
+  return new TextDecoder().decode(pt);
+}
+const form = document.getElementById('form'), pw = document.getElementById('pw'), btn = document.getElementById('btn'), err = document.getElementById('err');
+async function ouvrir(code, silencieux) {
+  btn.disabled = true; btn.textContent = 'Déchiffrement…'; err.textContent = '';
+  try {
+    const html = await dechiffrer(code);
+    try { sessionStorage.setItem(CLE, code); } catch (e) {}
+    document.open(); document.write(html); document.close();
+  } catch (e) {
+    if (!silencieux) err.textContent = 'Code incorrect.';
+    btn.disabled = false; btn.textContent = 'Déverrouiller';
+  }
+}
+form.addEventListener('submit', e => { e.preventDefault(); ouvrir(pw.value.trim(), false); });
+try { const s = sessionStorage.getItem(CLE); if (s) ouvrir(s, true); } catch (e) {}
+</script>
+</body>
+</html>

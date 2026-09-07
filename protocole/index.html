@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<title>Protocole d&#x27;entretien conduit par une IA</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../assets/fonts.css">
+<link rel="stylesheet" href="../assets/hub.css">
+</head>
+<body>
+<main class="doc">
+<a class="retour" href="../index.html">← Retour au dossier</a>
+<div class="eyebrow">— ACMÉ · 2026</div>
+<h1>Protocole d&#x27;entretien conduit par une IA</h1>
+<div class="meta">Document générique · version 1.0 · 25 août 2026</div>
+<p><strong>Document générique — indépendant de toute étude.</strong> Version 1.0 · 25 août 2026 · Exoflow pour Acmé</p>
+<p>Ce document décrit comment une IA peut mener un entretien qualitatif sans dégrader la donnée. Il ne dépend d'aucun guide particulier : n'importe quel guide de modération peut s'y brancher, à condition de respecter le contrat décrit en §2.</p>
+<hr>
+<h2 id="1-le-principe-deux-canaux">1. Le principe : deux canaux</h2>
+<p>Un modérateur humain improvise ses relances, et c'est très bien : il engage sa compétence et sa responsabilité. Une IA qui improvise à voix haute pose un problème différent — <strong>on ne sait plus si la personne répond au guide ou au modèle</strong>. La formulation entendue n'a été validée par personne.</p>
+<p>D'où la règle qui prime sur toutes les autres :</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Canal</th><th>Contenu</th><th>Qui l'écrit</th></tr></thead>
+<tbody>
+<tr><td><strong>voix</strong></td><td>Les questions et relances du guide, <strong>mot pour mot</strong></td><td>l'auteur du guide</td></tr>
+<tr><td><strong>écran</strong></td><td>Les précisions composées pour la situation, en carte texte</td><td>le modèle</td></tr>
+<tr><td><strong>aucun</strong></td><td>Le silence</td><td>—</td></tr>
+</tbody></table></div>
+<p>Ce que le participant <strong>entend</strong> est donc intégralement du texte validé en amont. Ce que le modèle <strong>compose</strong> existe, sert, et reste visible — mais à l'écrit, où il est traçable, relisible, et où le participant garde la main.</p>
+<blockquote><p><strong>La règle s'applique en code, pas dans le prompt.</strong> Une fonction vérifie que toute parole destinée à la voix appartient au répertoire fermé du nœud. Une phrase improvisée n'est pas prononcée : elle est reversée sur l'écran et marquée comme telle dans les notes. Un prompt se contourne ; un contrôle, non.</p></blockquote>
+<p><strong>Ce que ça coûte :</strong> un peu de fluidité. Le bot ne rebondit pas vocalement sur une formule inattendue. <strong>Ce que ça rapporte :</strong> un corpus où chaque stimulus verbal est connu, identique d'un entretien à l'autre, et opposable devant un client.</p>
+<hr>
+<h2 id="2-le-contrat-du-guide">2. Le contrat du guide</h2>
+<p>Un guide branchable fournit, pour chaque séquence :</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Champ</th><th>Rôle</th><th>Obligatoire</th></tr></thead>
+<tbody>
+<tr><td><code>id</code>, <code>phase</code>, <code>label</code></td><td>Identité de la séquence — sert au rattachement des verbatims</td><td>oui</td></tr>
+<tr><td><code>question</code></td><td>La question d'ouverture, <strong>prononcée mot pour mot</strong></td><td>oui</td></tr>
+<tr><td><code>objectif</code></td><td>Ce que la séquence doit produire, en une phrase</td><td>oui</td></tr>
+<tr><td><code>must_cover[]</code></td><td>Les sous-objectifs atomiques, chacun avec un <code>id</code> et un libellé</td><td>oui</td></tr>
+<tr><td><code>relances[]</code></td><td><strong>Le répertoire fermé du canal voix.</strong> Rien d'autre ne sera prononcé</td><td>oui</td></tr>
+<tr><td><code>contraintes_noeud[]</code></td><td>Les interdits propres à la séquence</td><td>non</td></tr>
+<tr><td><code>stimulus</code></td><td>Ce que le participant regarde</td><td>non</td></tr>
+<tr><td><code>capture</code></td><td>Widget de saisie structurée (classement, choix, note)</td><td>non</td></tr>
+<tr><td><code>duree_cible_s</code></td><td>Repère de rythme, pas une limite dure</td><td>oui</td></tr>
+<tr><td><code>sortie_si</code></td><td>Le critère de clôture, en langue naturelle</td><td>oui</td></tr>
+</tbody></table></div>
+<p><strong>La règle d'or de l'auteur de guide :</strong> tout ce qui doit être entendu doit être écrit. Une relance qu'on n'a pas écrite ne sera pas dite.</p>
+<hr>
+<h2 id="3-les-sept-relances-et-leur-canal">3. Les sept relances, et leur canal</h2>
+<p>Taxonomie d'après Robinson &amp; Rosenberg, <em>Probing in qualitative research interviews: Theory and practice</em> (2023), qui synthétise Gorden, Bernard, Roulston, Brinkmann &amp; Kvale.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>#</th><th>Relance</th><th>Canal</th><th>Quand</th><th>Forme</th></tr></thead>
+<tbody>
+<tr><td>1</td><td><strong>Silence</strong></td><td>aucun</td><td>La personne réfléchit, ou vient de livrer quelque chose de dense</td><td>On ne dit rien, on n'affiche rien</td></tr>
+<tr><td>2</td><td><strong>Encouragement</strong></td><td>voix</td><td>Le récit est en cours et se suffit</td><td>Trois mots : « Ensuite ? », « Quoi d'autre ? »</td></tr>
+<tr><td>3</td><td><strong>Élaboration</strong></td><td>voix</td><td>La réponse est trop brève</td><td>Une relance du répertoire, dite telle quelle</td></tr>
+<tr><td>4</td><td><strong>Clarification</strong></td><td>écran</td><td>Un mot ou une référence reste ambigu</td><td>« Quand vous dites « X », vous parlez de quoi ? »</td></tr>
+<tr><td>5</td><td><strong>Spécification</strong></td><td>écran</td><td>La réponse reste générale</td><td>Demander une situation concrète, datée, vécue</td></tr>
+<tr><td>6</td><td><strong>Contraste</strong></td><td>écran</td><td>Un jugement sans référence, ou deux choses qui se tendent</td><td>Restituer les deux sans juger</td></tr>
+<tr><td>7</td><td><strong>Récapitulation</strong></td><td>écran</td><td>Après un passage long</td><td>Reprendre <strong>ses</strong> mots, finir par « c'est ça ? »</td></tr>
+</tbody></table></div>
+<p><strong>Le silence est la relance la moins intrusive et souvent la plus productive.</strong> La littérature est constante là-dessus : elle laisse la personne reprendre le sujet à sa façon, sans que l'enquêteur n'oriente. Un bot qui remplit tous les blancs perd ce matériau.</p>
+<h3 id="les-relances-interdites">Les relances interdites</h3>
+<ul>
+<li><strong>Répéter mécaniquement le dernier mot entendu.</strong> C'est la caricature de l'écho. La littérature ne valide l'écho que sous sa forme minimale — un « mm-hmm » qui invite à continuer — jamais sous forme de question fabriquée autour d'un mot arbitraire.</li>
+<li><strong>Toute relance directive</strong> qui suggère une réponse, un exemple ou une catégorie. Les sondes directives contaminent la donnée en suggérant l'attendu.</li>
+<li><strong>Relancer pendant que la personne construit encore sa pensée.</strong></li>
+<li><strong>Relancer sur une émotion en cours d'expression.</strong> On laisse finir.</li>
+<li><strong>Enchaîner deux relances sur le même point</strong> sans que rien de neuf ne soit apporté.</li>
+</ul>
+<h3 id="quand-ne-pas-relancer-du-tout">Quand ne pas relancer du tout</h3>
+<p>Trois cas, tirés directement de la littérature :</p>
+<ol>
+<li>Le récit est cohérent et détaillé — on laisse couler.</li>
+<li>Une relance couperait une confidence en cours.</li>
+<li>La clarification abîmerait le rapport ou le confort de la personne.</li>
+</ol>
+<hr>
+<h2 id="4-la-s-quence-d-un-n-ud">4. La séquence d'un nœud</h2>
+<pre>   ouvrir ──▶ question du guide, mot pour mot
+              │
+              ▼
+        ┌── écouter ──┐
+        │             │  fin de tour détectée
+        │             ▼
+        │      évaluer : refus ? couverture ? suffisance ?
+        │             │
+        │   ┌─────────┼──────────┬───────────────┐
+        │   ▼         ▼          ▼               ▼
+        │ refus    silence     voix           écran
+        │   │      (rien)   (répertoire)   (carte texte)
+        │   │         │          │               │
+        │   ▼         └──────────┴───────────────┘
+        │ avancer                │
+        │                        ▼
+        └────────────────────────┘
+
+   clore ──▶ pont d&#x27;une phrase ──▶ nœud suivant</pre>
+<p>Deux portes s'ouvrent avant toute relance, dans cet ordre :</p>
+<ol>
+<li><strong>Refus ou gêne ?</strong> → on n'insiste jamais, on avance.</li>
+<li><strong>Suffisance ?</strong> → tous les <code>must_cover</code> couverts, ou la personne tourne en rond, ou la durée cible est largement dépassée → on clôt.</li>
+</ol>
+<p>Ce n'est qu'ensuite qu'on choisit un canal et un type de relance. Et le type doit différer des deux derniers employés : c'est la répétition, plus que la maladresse, qui trahit la machine.</p>
+<hr>
+<h2 id="5-le-protocole-d-engagement">5. Le protocole d'engagement</h2>
+<h3 id="avant">Avant</h3>
+<ul>
+<li><strong>Dire que c'est une IA.</strong> Obligation de transparence, et cela conditionne la façon dont la personne va s'engager. Le cacher se retourne toujours contre l'étude.</li>
+<li><strong>Consentement explicite et granulaire</strong> — enregistrement, transcription, analyse — révocable à tout moment, avec un bouton d'arrêt et de suppression visible en permanence.</li>
+<li><strong>Identité</strong> : prénom et nom. Le prénom sert à l'ouverture, comme le font les enquêteurs : « Vous êtes Philippe. Pour commencer… ». C'est le premier signal que quelqu'un s'adresse à <em>vous</em>.</li>
+<li><strong>Test micro</strong>, et une porte de sortie vers l'écrit qui ne soit pas une punition.</li>
+<li><strong>Trois règles annoncées</strong> : parlez normalement, les silences ne dérangent pas, vous pouvez arrêter.</li>
+</ul>
+<h3 id="pendant-l-entonnoir">Pendant : l'entonnoir</h3>
+<p>L'ordre n'est pas cosmétique. La littérature est claire : les sondes descriptives et mémorielles fonctionnent <strong>tôt</strong>, pendant que le rapport se construit. Les sondes exigeantes — clarification, explication, causalité — appartiennent à la <strong>fin</strong>.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Moment</th><th>Ce qu'on demande</th><th>Relances autorisées</th></tr></thead>
+<tbody>
+<tr><td><strong>Échauffement</strong></td><td>Du factuel sans enjeu : situation, cadre de vie</td><td>silence, encouragement, élaboration</td></tr>
+<tr><td><strong>Exploration</strong></td><td>Du vécu, des usages, du concret</td><td>+ clarification, spécification</td></tr>
+<tr><td><strong>Projection</strong></td><td>Du projectif, de l'imaginaire, de l'analogie</td><td>silence surtout — on ne commente pas</td></tr>
+<tr><td><strong>Confrontation</strong></td><td>Des arbitrages, des classements, des tensions</td><td>+ contraste, récapitulation</td></tr>
+<tr><td><strong>Clôture</strong></td><td>Une position nette</td><td>on exige une réponse tranchée</td></tr>
+</tbody></table></div>
+<p><strong>Sur le projectif</strong> — « si c'était un animal ? », « imaginez une publicité » — la règle est particulière : on laisse venir, on ne commente pas, on ne valide pas. Le seul relanceur autorisé est « pourquoi ? ». Toute autre intervention referme l'imaginaire au lieu de l'ouvrir.</p>
+<h3 id="le-rythme">Le rythme</h3>
+<ul>
+<li><strong>Fin de tour à 1,8–2,5 s de silence</strong>, contre 0,05 s par défaut chez les fournisseurs de transcription. Un participant à qui l'on demande une analogie réfléchit avant de répondre.</li>
+<li><strong>Le bot est interruptible, le bot n'interrompt jamais.</strong> Règle asymétrique, non négociable.</li>
+<li><strong>9 mots par prise de parole</strong> en médiane. Mesuré sur 2 306 tours d'enquêteurs humains sur un même guide : 71 % font 12 mots ou moins, 26 % n'ont pas de verbe, et <strong>aucun</strong> n'est dépensé à dire « d'accord » ou « très bien ».</li>
+</ul>
+<h3 id="apr-s">Après</h3>
+<p>Trois livrables minimum : le transcript attribué et horodaté, la couverture séquence par séquence, et les captures structurées. Les lignes affichées à l'écran doivent être <strong>marquées comme telles</strong> — un lecteur doit pouvoir distinguer ce qui a été entendu de ce qui a été lu.</p>
+<hr>
+<h2 id="6-les-captures-structur-es">6. Les captures structurées</h2>
+<p>Tout ce qui est un classement, un choix, une note ou un prix ne se déduit pas d'un transcript : ça se <strong>capture</strong>. Un widget, une valeur, un horodatage.</p>
+<p>C'est aussi ce qui rend l'analyse triviale ensuite : l'application sait quel nœud était actif à chaque milliseconde, donc le rattachement d'un verbatim à une question du guide n'est pas inféré — il est <strong>connu</strong>. Zéro erreur de rattachement, contre un taux non nul sur n'importe quel dépouillement manuel.</p>
+<hr>
+<h2 id="7-ce-qu-on-mesure-sur-chaque-entretien">7. Ce qu'on mesure sur chaque entretien</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Indicateur</th><th>Ce qu'il révèle</th><th>Seuil d'alerte</th></tr></thead>
+<tbody>
+<tr><td>Couverture par nœud</td><td>Le guide a-t-il été tenu</td><td>&lt; 70 % des <code>must_cover</code></td></tr>
+<tr><td>Répartition des canaux</td><td>Le modèle improvise-t-il trop</td><td>&gt; 40 % de cartes écran</td></tr>
+<tr><td>Paroles reversées</td><td>Le modèle sort du répertoire</td><td>&gt; 2 par séquence</td></tr>
+<tr><td>Variété des types</td><td>La relance tourne-t-elle en boucle</td><td>même type 3× d'affilée</td></tr>
+<tr><td>Longueur médiane des tours</td><td>Le bot parle-t-il trop</td><td>&gt; 14 mots</td></tr>
+<tr><td>Ratio de parole</td><td>Qui occupe l'espace</td><td>bot &gt; 30 % du temps</td></tr>
+</tbody></table></div>
+<p>Ces six chiffres suffisent à savoir, sans réécouter, si un entretien est exploitable.</p>
+<hr>
+<h2 id="8-brancher-une-autre-tude">8. Brancher une autre étude</h2>
+<ol>
+<li>Écrire le guide au format §2. <strong>Écrire toutes les relances</strong> — le répertoire voix, c'est elles.</li>
+<li>Poser les <code>must_cover</code> : atomiques, vérifiables, formulés comme une information à obtenir et non comme une question à poser.</li>
+<li>Écrire les <code>contraintes_noeud</code> : les interdits. C'est le champ le plus important et le plus oublié.</li>
+<li>Déclarer les stimuli et les captures.</li>
+<li>Enregistrer les textes fixes avec une voix humaine si le budget le permet — c'est le plus gros gain de crédibilité par euro dépensé.</li>
+<li><strong>Faire une vague de calibration</strong> avant toute vente : quelques entretiens menés en parallèle par un humain et par le bot, comparés sur la richesse du matériau — longueur des réponses projectives, nombre d'analogies spontanées, occurrences de tension et de contradiction.</li>
+</ol>
+<p>Le moteur, l'interface et la chaîne de livrables ne changent pas. <strong>Une étude = un fichier de guide.</strong></p>
+<hr>
+<h2 id="sources">Sources</h2>
+<ul>
+<li>Robinson, S. &amp; Rosenberg, D. (2023). <em>Probing in qualitative research interviews: Theory and practice.</em> Qualitative Research in Psychology. <a href="https://gala.gre.ac.uk/id/eprint/44090/7/44090_ROBINSON_Probing_in_qualitative_research_interviews_Theory_and_practice.pdf" target="_blank" rel="noopener">Version en accès ouvert</a></li>
+<li><em>Probes and Probing</em>, in The SAGE Encyclopedia of Qualitative Research Methods.</li>
+<li>Chopra, F. &amp; Haaland, I. <em>Conducting Qualitative Interviews with AI</em> — 381 entretiens menés par IA.</li>
+<li><em>AInterviewer: A Platform for Designing and Conducting AI-led Qualitative Interviews</em>, ACL 2026 — architecture à agents séparés (sondage, classification, reformulation).</li>
+<li>Corpus interne : 10 entretiens d'un même terrain menés par des enquêteurs humains, 2 306 tours mesurés.</li>
+</ul>
+</main>
+</body>
+</html>

@@ -1,0 +1,11 @@
+CODE-ACCES-NE-PAS-PUBLIER.txt
+assets/faces.json
+__pycache__/
+.DS_Store
+_tmp/
+*.log
+shots/_hub*
+scenarios.mjs
+_mots-sensibles.txt
+proposition/assets/
+demo/*.clair.html

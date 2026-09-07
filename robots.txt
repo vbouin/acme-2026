@@ -1,0 +1,3 @@
+# Dossier de travail partagé par lien. Ne pas indexer.
+User-agent: *
+Disallow: /
