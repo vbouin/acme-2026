@@ -600,8 +600,9 @@ def reserve() -> None:
                             "Document confidentiel, comptes et véhicules nommés. Fichier lourd, le déchiffrement prend "
                             "quelques secondes.",
                             charset(SOURCES["bbr"].read_text(encoding="utf-8")))
+    ANCRES = {"showroom": "../index.html#showroom"}   # documents avec une carte dédiée sur la page
     for nom, (titre, sous_titre, clair) in docs.items():
-        sceller(clair, code, dossier, nom, titre, sous_titre)
+        sceller(clair, code, dossier, nom, titre, sous_titre, retour=ANCRES.get(nom, "../index.html"))
     manquants = [cle for cle in ("etude", "recommandations", "adr", "smallvan", "bbr") if not SOURCES[cle].exists()]
     if manquants:
         print(f"   ⚠ sources absentes, document(s) non régénéré(s) : {manquants}", file=sys.stderr)
