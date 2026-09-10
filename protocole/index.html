@@ -11,7 +11,7 @@
 </head>
 <body>
 <main class="doc">
-<a class="retour" href="../index.html">← Retour au dossier</a>
+<a class="retour" href="../index.html" onclick="if(document.referrer&&document.referrer.indexOf(location.origin)===0){history.back();return false}">← Retour</a>
 <div class="eyebrow">— ACMÉ · 2026</div>
 <h1>Protocole d&#x27;entretien conduit par une IA</h1>
 <div class="meta">Document générique · version 1.0 · 25 août 2026</div>
@@ -51,7 +51,7 @@
 <p><strong>La règle d'or de l'auteur de guide :</strong> tout ce qui doit être entendu doit être écrit. Une relance qu'on n'a pas écrite ne sera pas dite.</p>
 <hr>
 <h2 id="3-les-sept-relances-et-leur-canal">3. Les sept relances, et leur canal</h2>
-<p>Taxonomie d'après Robinson &amp; Rosenberg, <em>Probing in qualitative research interviews: Theory and practice</em> (2023), qui synthétise Gorden, Bernard, Roulston, Brinkmann &amp; Kvale.</p>
+<p>Taxonomie d'après Robinson, <em>Probing in qualitative research interviews: Theory and practice</em> (2023), qui synthétise Gorden, Bernard, Roulston, Brinkmann &amp; Kvale.</p>
 <div class="table-wrap"><table>
 <thead><tr><th>#</th><th>Relance</th><th>Canal</th><th>Quand</th><th>Forme</th></tr></thead>
 <tbody>
@@ -112,7 +112,7 @@
 <ul>
 <li><strong>Dire que c'est une IA.</strong> Obligation de transparence, et cela conditionne la façon dont la personne va s'engager. Le cacher se retourne toujours contre l'étude.</li>
 <li><strong>Consentement explicite et granulaire</strong> — enregistrement, transcription, analyse — révocable à tout moment, avec un bouton d'arrêt et de suppression visible en permanence.</li>
-<li><strong>Identité</strong> : prénom et nom. Le prénom sert à l'ouverture, comme le font les enquêteurs : « Vous êtes Philippe. Pour commencer… ». C'est le premier signal que quelqu'un s'adresse à <em>vous</em>.</li>
+<li><strong>Identité</strong> : prénom et nom. Le prénom sert à l'ouverture, comme le font les enquêteurs : « Vous êtes Julien. Pour commencer… ». C'est le premier signal que quelqu'un s'adresse à <em>vous</em>.</li>
 <li><strong>Test micro</strong>, et une porte de sortie vers l'écrit qui ne soit pas une punition.</li>
 <li><strong>Trois règles annoncées</strong> : parlez normalement, les silences ne dérangent pas, vous pouvez arrêter.</li>
 </ul>
@@ -167,7 +167,7 @@
 <hr>
 <h2 id="sources">Sources</h2>
 <ul>
-<li>Robinson, S. &amp; Rosenberg, D. (2023). <em>Probing in qualitative research interviews: Theory and practice.</em> Qualitative Research in Psychology. <a href="https://gala.gre.ac.uk/id/eprint/44090/7/44090_ROBINSON_Probing_in_qualitative_research_interviews_Theory_and_practice.pdf" target="_blank" rel="noopener">Version en accès ouvert</a></li>
+<li>Robinson, O. C. (2023). <em>Probing in qualitative research interviews: Theory and practice.</em> Qualitative Research in Psychology. <a href="https://gala.gre.ac.uk/id/eprint/44090/7/44090_ROBINSON_Probing_in_qualitative_research_interviews_Theory_and_practice.pdf" target="_blank" rel="noopener">Version en accès ouvert</a></li>
 <li><em>Probes and Probing</em>, in The SAGE Encyclopedia of Qualitative Research Methods.</li>
 <li>Chopra, F. &amp; Haaland, I. <em>Conducting Qualitative Interviews with AI</em> — 381 entretiens menés par IA.</li>
 <li><em>AInterviewer: A Platform for Designing and Conducting AI-led Qualitative Interviews</em>, ACL 2026 — architecture à agents séparés (sondage, classification, reformulation).</li>

@@ -38,11 +38,16 @@ p + p { margin-top: 14px; }
 .nav-inner { display: flex; align-items: center; justify-content: space-between;
   height: 68px; gap: 24px; }
 .nav-logo img { height: 34px; width: auto; display: block; }
-.nav-links { display: flex; gap: 26px; }
+.nav-links { display: flex; gap: 26px; margin-left: auto; }
 .nav-links a { font-family: var(--font-mono); font-size: 11px; letter-spacing: .18em;
   text-transform: uppercase; text-decoration: none; color: var(--g700); }
 .nav-links a:hover { color: var(--ink); }
-@media (max-width: 720px) { .nav-links { display: none; } }
+.nav-lang { font-family: var(--font-mono); font-size: 11px; letter-spacing: .16em; text-decoration: none;
+  color: var(--ink); border: 1px solid var(--ink); padding: 6px 10px 5px; line-height: 1; flex: none;
+  transition: background .2s, color .2s; }
+.nav-lang:hover { background: var(--ink); color: var(--white); }
+@media (max-width: 1080px) { .nav-links { gap: 16px; } .nav-links a { letter-spacing: .12em; } }
+@media (max-width: 900px) { .nav-links { display: none; } }
 
 /* ---- Hero ----------------------------------------------------------------- */
 .hero { position: relative; padding: 110px 0 90px; overflow: hidden;
@@ -65,7 +70,7 @@ p + p { margin-top: 14px; }
 .section-head { max-width: 760px; margin-bottom: 52px; }
 .section-head .lead { margin-top: 4px; }
 
-/* ---- En cinq minutes ------------------------------------------------------ */
+/* ---- Trois engagements ------------------------------------------------------ */
 .trio { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
   background: var(--g200); border: 1px solid var(--g200); }
 .trio > article { background: var(--white); padding: 32px 28px; }
@@ -87,51 +92,39 @@ p + p { margin-top: 14px; }
 .numeros b { font-weight: 600; }
 .note { margin-top: 20px; padding-left: 18px; border-left: 2px solid var(--ink); font-size: 14px; line-height: 1.6; color: var(--g500); }
 
-/* ---- Livrables ------------------------------------------------------------ */
+/* ---- Livrables (espace réservé) ------------------------------------------------ */
 .livrables { display: grid; grid-template-columns: 1fr 1fr; gap: 1px;
   background: var(--g200); border: 1px solid var(--g200); }
 .livrable { background: var(--white); padding: 30px 30px 32px; display: flex; flex-direction: column; }
-.livrable--large { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 44px; align-items: start; }
-.livrable--large .cadre { margin-bottom: 0; }
 .cadre { border: 1px solid var(--g200); border-radius: 3px; overflow: hidden; background: var(--g100);
-  aspect-ratio: 4 / 3; margin-bottom: 24px; }
+  aspect-ratio: 3 / 2; margin-bottom: 24px; }
 .cadre img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
-.cadre--haut img { object-position: top; }
 .livrable .eyebrow { margin-bottom: 14px; }
 .livrable h3 { font-family: var(--font-display); font-weight: 700; font-size: 25px; line-height: 1.08;
   letter-spacing: -.02em; margin-bottom: 14px; }
-.livrable h3 i { font-style: italic; font-family: Georgia, 'Times New Roman', serif; font-weight: 400; color: var(--g500); }
 .livrable p { font-size: 14.5px; line-height: 1.64; color: var(--g700); }
 .regarder { margin: 16px 0 0; padding: 14px 16px; background: var(--offwhite); border-left: 2px solid var(--ink);
   font-size: 13.5px; line-height: 1.6; color: var(--g900); }
+.section--off .regarder { background: var(--white); }
 .regarder b { font-family: var(--font-mono); font-weight: 500; font-size: 10.5px; letter-spacing: .2em;
   text-transform: uppercase; color: var(--g500); display: block; margin-bottom: 4px; }
 .livrable-pied { margin-top: auto; padding-top: 22px; display: flex; flex-wrap: wrap; align-items: center;
   justify-content: space-between; gap: 12px 20px; }
 .livrable-pied .mono { letter-spacing: .14em; }
-.liens { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 12px; }
-.liens a { font-size: 13.5px; text-decoration: underline; text-underline-offset: 3px; color: var(--g900); }
-.liens a:hover { color: var(--ink); }
 
-/* ---- Liste de livrables : média à gauche, texte à droite, en alternance ---- */
-.livrables--liste { grid-template-columns: 1fr; }
-.livrables--liste .livrable { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-  gap: 44px; padding: 40px 40px 42px; align-items: start; }
-.livrables--liste .livrable:nth-child(even) .livrable-media { order: 2; }
-.livrable-media { min-width: 0; }
-.livrable-texte { min-width: 0; display: flex; flex-direction: column; }
-.regarder code { font-family: var(--font-mono); font-size: .9em; background: var(--white);
-  padding: 1px 6px; border: 1px solid var(--g200); }
-
-/* ---- Slider d'écrans --------------------------------------------------------- */
-.slider { position: relative; border: 1px solid var(--g200); background: var(--g100); overflow: hidden; outline: none; }
+/* ---- Slider d'écrans ----------------------------------------------------------
+   Un seul format pour tout ce qui passe dans un slider : 3:2. Les écrans sont
+   produits à ce format (ou complétés sur leurs bords par build.py) : la fenêtre
+   ne change jamais de hauteur, rien n'est recadré, pas de bande grise.       */
+.slider { position: relative; border: 1px solid var(--g200); background: var(--white); overflow: hidden; outline: none; }
 .slider:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 .slider-track { display: flex; transition: transform .45s var(--ease); will-change: transform; }
 .slide { flex: 0 0 100%; min-width: 0; margin: 0; cursor: zoom-in; background: var(--white); }
-.slide img, .slide video { display: block; width: 100%; aspect-ratio: 14 / 9; object-fit: cover; object-position: top; background: var(--white); }
+.slide img, .slide video { display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; object-position: center top;
+  background: var(--white); }
 .slide video { background: var(--g100); }
-.slide figcaption { padding: 10px 14px 12px; font-size: 12.5px; line-height: 1.5; color: var(--g700);
-  border-top: 1px solid var(--g100); min-height: 54px; }
+.slide figcaption { padding: 12px 16px 13px; font-size: 13.5px; line-height: 1.5; color: var(--g700);
+  border-top: 1px solid var(--g100); min-height: 48px; }
 .slider-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px;
   padding: 8px 10px; background: var(--white); border-top: 1px solid var(--g200); }
 .slider-btn { width: 42px; height: 36px; border: 1px solid var(--ink); background: var(--white); color: var(--ink);
@@ -143,7 +136,19 @@ p + p { margin-top: 14px; }
 .slider-dots button.on { background: var(--ink); border-color: var(--ink); }
 .slider-count { white-space: nowrap; }
 .slider--seul .slider-bar { display: none; }
-.cadre--vide { display: grid; place-items: center; aspect-ratio: 14 / 9; }
+.cadre--vide { display: grid; place-items: center; aspect-ratio: 3 / 2; }
+
+/* La vitrine : l'écran en pleine largeur du conteneur, le texte dessous en deux
+   colonnes. Les hauteurs se répondent d'une section à l'autre. */
+.vitrine { margin: 0 0 44px; }
+.colonnes { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 56px; align-items: start; }
+.colonnes p.texte { font-size: 15.5px; line-height: 1.68; color: var(--g700); margin-bottom: 20px; }
+.forme + .forme { margin-top: 96px; padding-top: 72px; border-top: 1px solid var(--g200); }
+.forme-head { margin-bottom: 22px; }
+.forme-head .lbl { margin-bottom: 10px; }
+.forme-head .h3 { font-family: var(--font-display); font-weight: 700; font-size: clamp(24px, 2.4vw, 30px); line-height: 1.08;
+  letter-spacing: -.02em; }
+.stats--haut { margin-top: 0; }
 
 /* ---- Visionneuse -------------------------------------------------------------- */
 .vis { position: fixed; inset: 0; z-index: 1000; background: rgba(10, 10, 10, .95);
@@ -165,9 +170,9 @@ p + p { margin-top: 14px; }
 /* ---- Page « Notre avenir » --------------------------------------------------- */
 .hero-film { position: relative; min-height: 86vh; display: flex; align-items: center; overflow: hidden; background: #e9e9e9; }
 .hero-film-fond { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.hero-film-voile { position: absolute; inset: 0; background: linear-gradient(100deg, rgba(255,255,255,.97) 0%, rgba(255,255,255,.92) 34%, rgba(255,255,255,.55) 56%, rgba(255,255,255,0) 78%); }
+.hero-film-voile { position: absolute; inset: 0; background: linear-gradient(100deg, rgba(255,255,255,.97) 0%, rgba(255,255,255,.92) 38%, rgba(255,255,255,.55) 60%, rgba(255,255,255,0) 80%); }
 .hero-film-texte { position: relative; z-index: 2; padding: 96px 0 110px; }
-.hero-film-texte h1 { margin: 22px 0 26px; }
+.hero-film-texte h1 { margin: 22px 0 26px; font-size: clamp(40px, 5.4vw, 74px); }
 .hero-film-texte .lead { max-width: 46ch; }
 .hero-actions { margin-top: 36px; }
 .hero-film-pied { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; padding: 12px 0; }
@@ -196,16 +201,13 @@ p + p { margin-top: 14px; }
 .impact p { font-size: 13.5px; line-height: 1.62; color: var(--g700); }
 .section--ink .actions { margin-top: 8px; }
 
-/* Les zooms d'interface n'ont pas tous le même format : la boîte est fixe, l'image
-   s'y inscrit entière, sur fond neutre. Aucun recadrage ne mange une donnée. */
-.slide img { object-fit: contain; object-position: center; background: var(--g100); aspect-ratio: 4 / 3; }
-.slide video { object-fit: cover; aspect-ratio: 4 / 3; background: var(--g100); }
-
 @media (max-width: 980px) {
-  .split { grid-template-columns: 1fr; gap: 28px; }
+  .split, .colonnes { grid-template-columns: 1fr; gap: 28px; }
   .split--inverse .split-media { order: 0; }
   .impact { grid-template-columns: 1fr; }
   .stats { grid-template-columns: 1fr 1fr; }
+  .vitrine { margin-bottom: 30px; }
+  .forme + .forme { margin-top: 64px; padding-top: 48px; }
 }
 
 /* ---- Boutons carrés, flèche qui glisse ------------------------------------ */
@@ -219,15 +221,6 @@ p + p { margin-top: 14px; }
 .btn--dark:hover { background: var(--g700); border-color: var(--g700); }
 .btn--light { border-color: var(--white); color: var(--white); }
 .btn--light:hover { background: var(--white); color: var(--ink); }
-
-/* ---- Réservé ---------------------------------------------------------------- */
-.reserve-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--g700);
-  border: 1px solid var(--g700); margin-top: 48px; }
-.reserve-grid > article { background: var(--ink); padding: 30px 26px; }
-.reserve-grid h3 { font-family: var(--font-display); font-weight: 700; font-size: 19px; line-height: 1.12; margin: 14px 0 12px; }
-.reserve-grid p { font-size: 14px; line-height: 1.62; color: var(--g300); }
-.reserve-cta { margin-top: 44px; display: flex; flex-wrap: wrap; align-items: center; gap: 18px 32px; }
-.reserve-cta .mono { color: var(--g300); }
 
 /* ---- Pied ------------------------------------------------------------------- */
 .pied { background: var(--ink); color: var(--g300); padding: 56px 0 50px; border-top: 1px solid var(--g700); }
@@ -265,7 +258,7 @@ p + p { margin-top: 14px; }
 .doc .table-wrap table { margin-bottom: 0; min-width: 560px; }
 .doc a { color: var(--ink); text-underline-offset: 3px; }
 
-/* ---- Grille d'accès (espace réservé) --------------------------------------- */
+/* ---- Grille d'accès ---------------------------------------------------------- */
 .gate { min-height: 100vh; background: var(--ink); color: var(--white); display: flex; flex-direction: column; }
 .gate-inner { flex: 1; display: grid; place-items: center; padding: 60px var(--gutter); }
 .gate-box { width: min(560px, 100%); }
@@ -284,10 +277,8 @@ p + p { margin-top: 14px; }
 
 /* ---- Responsive -------------------------------------------------------------- */
 @media (max-width: 980px) {
-  .trio, .reserve-grid, .livrables, .pied-inner { grid-template-columns: 1fr; }
+  .trio, .livrables, .pied-inner { grid-template-columns: 1fr; }
   .deux { grid-template-columns: 1fr; gap: 36px; }
-  .livrables--liste .livrable { grid-template-columns: 1fr; gap: 24px; padding: 24px 20px 28px; }
-  .livrables--liste .livrable:nth-child(even) .livrable-media { order: 0; }
   .section { padding: 64px 0; }
   .hero { padding: 72px 0 60px; }
   .vis-nav { width: 40px; height: 40px; margin: 0 6px; }

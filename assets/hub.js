@@ -1,18 +1,22 @@
 /* Sliders d'écrans + visionneuse. Sans dépendance.
    Un slider = une piste de figures ; les vidéos ne jouent que sur la vue
    active et seulement quand le slider est à l'écran. Un clic ouvre la vue en
-   grand dans la visionneuse. Flèches du clavier et balayage tactile compris. */
+   grand dans la visionneuse. Flèches du clavier et balayage tactile compris.
+   Les libellés suivent la langue de la page (<html lang>). */
 (function () {
   'use strict';
   var reduit = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var EN = (document.documentElement.lang || 'fr').slice(0, 2) === 'en';
+  var L = EN ? { fermer: 'Close ×', prec: 'Previous', suiv: 'Next', ecran: 'Screen ' }
+             : { fermer: 'Fermer ×', prec: 'Précédent', suiv: 'Suivant', ecran: 'Écran ' };
 
   // ---- visionneuse -------------------------------------------------------
   var vis = document.createElement('div');
   vis.className = 'vis'; vis.hidden = true;
-  vis.innerHTML = '<button class="vis-close" aria-label="Fermer">Fermer ×</button>' +
-    '<button class="vis-nav vis-prev" aria-label="Précédent">←</button>' +
+  vis.innerHTML = '<button class="vis-close" aria-label="' + L.fermer + '">' + L.fermer + '</button>' +
+    '<button class="vis-nav vis-prev" aria-label="' + L.prec + '">←</button>' +
     '<figure class="vis-fig"></figure>' +
-    '<button class="vis-nav vis-next" aria-label="Suivant">→</button>' +
+    '<button class="vis-nav vis-next" aria-label="' + L.suiv + '">→</button>' +
     '<div class="vis-cap mono"></div>';
   document.body.appendChild(vis);
   var visFig = vis.querySelector('.vis-fig'), visCap = vis.querySelector('.vis-cap');
@@ -78,7 +82,7 @@
 
     if (dots) slides.forEach(function (_, k) {
       var b = document.createElement('button'); b.type = 'button';
-      b.setAttribute('aria-label', 'Écran ' + (k + 1));
+      b.setAttribute('aria-label', L.ecran + (k + 1));
       b.addEventListener('click', function () { s.aller(k); });
       dots.appendChild(b);
     });

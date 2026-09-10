@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<title>The detailed proposal</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../../assets/fonts.css">
+<link rel="stylesheet" href="../../assets/hub.css">
+</head>
+<body class="gate">
+<div class="gate-inner">
+  <div class="gate-box">
+    <img src="../../assets/acme-blanc-h.svg" alt="ACMÉ">
+    <div class="eyebrow">— Proposal</div>
+    <h1>The detailed proposal</h1>
+    <p>The proposal and its platform screenshots are encrypted. Same code as the demo.</p>
+    <form id="form" class="gate-form" autocomplete="off">
+      <input id="pw" type="password" placeholder="Access code" aria-label="Access code" autocomplete="off" required>
+      <button id="btn" type="submit" class="btn btn--light">Unlock</button>
+    </form>
+    <div id="err" class="gate-err" aria-live="polite"></div>
+  </div>
+</div>
+<div class="gate-pied"><span>The content is encrypted in the file served; it can only be read with the code. <a href="../../en/index.html#verbatim" onclick="if(document.referrer&&document.referrer.indexOf(location.origin)===0){history.back();return false}" style="color:inherit">Back to the page</a></span></div>
+<script>
+const FICHIER = "index.bin", ITER = 250000, CLE = 'acme2026-code', TXT = {"encours": "Decrypting…", "faux": "Wrong code.", "ouvrir": "Unlock"};
+let BUF = null;
+async function charger() {
+  if (!BUF) { const r = await fetch(FICHIER, { cache: 'no-store' }); if (!r.ok) throw new Error('absent'); BUF = new Uint8Array(await r.arrayBuffer()); }
+  return BUF;
+}
+async function derive(code, sel) {
+  const km = await crypto.subtle.importKey('raw', new TextEncoder().encode(code), { name: 'PBKDF2' }, false, ['deriveKey']);
+  return crypto.subtle.deriveKey({ name: 'PBKDF2', salt: sel, iterations: ITER, hash: 'SHA-256' }, km, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+}
+async function dechiffrer(code) {
+  const b = await charger(), dec = new TextDecoder();
+  if (b[0] === 65 && b[1] === 67 && b[2] === 77 && b[3] === 50) {
+    const n = b[4]; let pos = 5, cek = null;
+    for (let k = 0; k < n && !cek; k++, pos += 76) {
+      try {
+        const kek = await derive(code, b.slice(pos, pos + 16));
+        const brute = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b.slice(pos + 16, pos + 28) }, kek, b.slice(pos + 28, pos + 76));
+        cek = await crypto.subtle.importKey('raw', brute, { name: 'AES-GCM' }, false, ['decrypt']);
+      } catch (e) {}
+    }
+    if (!cek) throw new Error('code');
+    const d = 5 + 76 * n;
+    return dec.decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b.slice(d, d + 12) }, cek, b.slice(d + 12)));
+  }
+  const kek = await derive(code, b.slice(0, 16));          // ancien format : un seul code
+  return dec.decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b.slice(16, 28) }, kek, b.slice(28)));
+}
+const form = document.getElementById('form'), pw = document.getElementById('pw'), btn = document.getElementById('btn'), err = document.getElementById('err');
+async function ouvrir(code, silencieux) {
+  btn.disabled = true; btn.textContent = TXT.encours; err.textContent = '';
+  try {
+    const html = await dechiffrer(code);
+    try { sessionStorage.setItem(CLE, code); } catch (e) {}
+    document.open(); document.write(html); document.close();
+  } catch (e) {
+    if (!silencieux) err.textContent = TXT.faux;
+    btn.disabled = false; btn.textContent = TXT.ouvrir;
+  }
+}
+form.addEventListener('submit', e => { e.preventDefault(); ouvrir(pw.value.trim(), false); });
+try { const s = sessionStorage.getItem(CLE); if (s) ouvrir(s, true); } catch (e) {}
+</script>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<title>AI-led interview protocol</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../../assets/fonts.css">
+<link rel="stylesheet" href="../../assets/hub.css">
+</head>
+<body>
+<main class="doc">
+<a class="retour" href="../../en/index.html" onclick="if(document.referrer&&document.referrer.indexOf(location.origin)===0){history.back();return false}">← Back</a>
+<div class="eyebrow">— ACMÉ · 2026</div>
+<h1>AI-led interview protocol</h1>
+<div class="meta">Generic document · version 1.0 · 25 August 2026</div>
+<p><strong>Generic document — independent of any study.</strong> Version 1.0 · 25 August 2026 · Exoflow for Acmé</p>
+<p>This document describes how an AI can conduct a qualitative interview without degrading the data. It does not depend on any particular guide: any discussion guide can plug into it, provided it follows the contract described in §2.</p>
+<hr>
+<h2 id="1-the-principle-two-channels">1. The principle: two channels</h2>
+<p>A human moderator improvises their probes, and that is fine: they put their skill and their accountability on the line. An AI that improvises out loud raises a different problem — <strong>you can no longer tell whether the person is answering the guide or the model</strong>. No one has validated the wording they heard.</p>
+<p>Hence the rule that overrides all others:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Channel</th><th>Content</th><th>Who writes it</th></tr></thead>
+<tbody>
+<tr><td><strong>voice</strong></td><td>The guide's questions and probes, <strong>word for word</strong></td><td>the guide author</td></tr>
+<tr><td><strong>screen</strong></td><td>Clarifications composed for the situation, as a text card</td><td>the model</td></tr>
+<tr><td><strong>none</strong></td><td>Silence</td><td>—</td></tr>
+</tbody></table></div>
+<p>What the participant <strong>hears</strong> is therefore entirely text validated in advance. What the model <strong>composes</strong> exists, is useful, and stays visible — but in writing, where it is traceable, reviewable, and where the participant stays in control.</p>
+<blockquote><p><strong>The rule is enforced in code, not in the prompt.</strong> A function checks that every utterance meant for the voice channel belongs to the node's closed repertoire. An improvised sentence is not spoken: it is diverted to the screen and flagged as such in the notes. A prompt can be worked around; a check cannot.</p></blockquote>
+<p><strong>What it costs:</strong> some fluidity. The bot does not pick up on an unexpected phrase by voice. <strong>What it buys:</strong> a corpus where every verbal stimulus is known, identical from one interview to the next, and defensible in front of a client.</p>
+<hr>
+<h2 id="2-the-guide-contract">2. The guide contract</h2>
+<p>A pluggable guide provides, for each sequence:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Field</th><th>Role</th><th>Required</th></tr></thead>
+<tbody>
+<tr><td><code>id</code>, <code>phase</code>, <code>label</code></td><td>Sequence identity — used to link verbatims to the sequence</td><td>yes</td></tr>
+<tr><td><code>question</code></td><td>The opening question, <strong>spoken word for word</strong></td><td>yes</td></tr>
+<tr><td><code>objectif</code> (objective)</td><td>What the sequence must produce, in one sentence</td><td>yes</td></tr>
+<tr><td><code>must_cover[]</code></td><td>The atomic sub-objectives, each with an <code>id</code> and a label</td><td>yes</td></tr>
+<tr><td><code>relances[]</code> (probes)</td><td><strong>The closed repertoire of the voice channel.</strong> Nothing else will be spoken</td><td>yes</td></tr>
+<tr><td><code>contraintes_noeud[]</code> (node constraints)</td><td>The prohibitions specific to the sequence</td><td>no</td></tr>
+<tr><td><code>stimulus</code></td><td>What the participant is looking at</td><td>no</td></tr>
+<tr><td><code>capture</code></td><td>Structured input widget (ranking, choice, rating)</td><td>no</td></tr>
+<tr><td><code>duree_cible_s</code> (target duration, s)</td><td>Pacing reference, not a hard limit</td><td>yes</td></tr>
+<tr><td><code>sortie_si</code> (exit if)</td><td>The closing criterion, in natural language</td><td>yes</td></tr>
+</tbody></table></div>
+<p><strong>The guide author's golden rule:</strong> everything that must be heard must be written. A probe that has not been written will not be said.</p>
+<hr>
+<h2 id="3-the-seven-probes-and-their-channel">3. The seven probes, and their channel</h2>
+<p>Taxonomy based on Robinson, <em>Probing in qualitative research interviews: Theory and practice</em> (2023), which synthesizes Gorden, Bernard, Roulston, Brinkmann &amp; Kvale.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>#</th><th>Probe</th><th>Channel</th><th>When</th><th>Form</th></tr></thead>
+<tbody>
+<tr><td>1</td><td><strong>Silence</strong></td><td>none</td><td>The person is thinking, or has just shared something dense</td><td>Say nothing, show nothing</td></tr>
+<tr><td>2</td><td><strong>Encouragement</strong></td><td>voice</td><td>The account is under way and stands on its own</td><td>Three words: "And then?", "What else?"</td></tr>
+<tr><td>3</td><td><strong>Elaboration</strong></td><td>voice</td><td>The answer is too short</td><td>A probe from the repertoire, said exactly as written</td></tr>
+<tr><td>4</td><td><strong>Clarification</strong></td><td>screen</td><td>A word or a reference remains ambiguous</td><td>"When you say 'X', what do you mean?"</td></tr>
+<tr><td>5</td><td><strong>Specification</strong></td><td>screen</td><td>The answer stays general</td><td>Ask for a concrete, first-hand situation, with a date</td></tr>
+<tr><td>6</td><td><strong>Contrast</strong></td><td>screen</td><td>A judgment with no reference point, or two things in tension</td><td>Restate both without judging</td></tr>
+<tr><td>7</td><td><strong>Summary</strong></td><td>screen</td><td>After a long passage</td><td>Reuse <strong>their</strong> words, end with "is that right?"</td></tr>
+</tbody></table></div>
+<p><strong>Silence is the least intrusive probe and often the most productive.</strong> The literature is consistent on this: silence lets the person pick the topic back up in their own way, without the interviewer steering. A bot that fills every pause loses this material.</p>
+<h3 id="prohibited-probes">Prohibited probes</h3>
+<ul>
+<li><strong>Mechanically repeating the last word heard.</strong> This is a caricature of the echo. The literature endorses the echo only in its minimal form — a "mm-hmm" that invites the person to go on — never as a question built around an arbitrary word.</li>
+<li><strong>Any leading probe</strong> that suggests an answer, an example or a category. Leading probes contaminate the data by signaling what is expected.</li>
+<li><strong>Probing while the person is still forming their thought.</strong></li>
+<li><strong>Probing an emotion while it is being expressed.</strong> Let the person finish.</li>
+<li><strong>Chaining two probes on the same point</strong> when nothing new has come up.</li>
+</ul>
+<h3 id="when-not-to-probe-at-all">When not to probe at all</h3>
+<p>Three cases, taken directly from the literature:</p>
+<ol>
+<li>The account is coherent and detailed — let it flow.</li>
+<li>A probe would cut short a disclosure in progress.</li>
+<li>Clarifying would damage rapport or the person's comfort.</li>
+</ol>
+<hr>
+<h2 id="4-the-sequence-of-a-node">4. The sequence of a node</h2>
+<pre>   open ──▶ guide question, word for word
+              │
+              ▼
+        ┌── listen ───┐
+        │             │  end of turn detected
+        │             ▼
+        │      assess: refusal? coverage? sufficiency?
+        │             │
+        │   ┌─────────┼──────────┬───────────────┐
+        │   ▼         ▼          ▼               ▼
+        │ refusal  silence     voice          screen
+        │   │    (nothing)  (repertoire)    (text card)
+        │   │         │          │               │
+        │   ▼         └──────────┴───────────────┘
+        │ advance                │
+        │                        ▼
+        └────────────────────────┘
+
+   close ──▶ one-sentence bridge ──▶ next node</pre>
+<p>Two gates are checked before any probe, in this order:</p>
+<ol>
+<li><strong>Refusal or discomfort?</strong> → never press the point, move on.</li>
+<li><strong>Sufficiency?</strong> → all <code>must_cover</code> items covered, or the person is going in circles, or the target duration is well exceeded → close.</li>
+</ol>
+<p>Only then do you choose a channel and a probe type. And the type must differ from the last two used: repetition, more than clumsiness, is what gives the machine away.</p>
+<hr>
+<h2 id="5-the-engagement-protocol">5. The engagement protocol</h2>
+<h3 id="before">Before</h3>
+<ul>
+<li><strong>Say that it is an AI.</strong> It is a transparency obligation, and it shapes how the person will engage. Hiding it always backfires on the study.</li>
+<li><strong>Explicit, granular consent</strong> — recording, transcription, analysis — revocable at any time, with a stop-and-delete button visible at all times.</li>
+<li><strong>Identity</strong>: first and last name. The first name is used in the opening, as interviewers do: "You're Julien. To begin…". It is the first signal that someone is speaking to <em>you</em>.</li>
+<li><strong>Microphone test</strong>, and a way out to written answers that is not a penalty.</li>
+<li><strong>Three rules, stated up front</strong>: speak normally, silences are fine, you can stop.</li>
+</ul>
+<h3 id="during-the-funnel">During: the funnel</h3>
+<p>The order is not cosmetic. The literature is clear: descriptive and memory probes work <strong>early</strong>, while rapport is being built. Demanding probes — clarification, explanation, causality — belong at the <strong>end</strong>.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Stage</th><th>What we ask for</th><th>Allowed probes</th></tr></thead>
+<tbody>
+<tr><td><strong>Warm-up</strong></td><td>Low-stakes facts: situation, living environment</td><td>silence, encouragement, elaboration</td></tr>
+<tr><td><strong>Exploration</strong></td><td>Lived experience, usage, specifics</td><td>+ clarification, specification</td></tr>
+<tr><td><strong>Projection</strong></td><td>Projective material, imagination, analogy</td><td>mostly silence — no commenting</td></tr>
+<tr><td><strong>Confrontation</strong></td><td>Trade-offs, rankings, tensions</td><td>+ contrast, summary</td></tr>
+<tr><td><strong>Closing</strong></td><td>A definite position</td><td>demand a clear-cut answer</td></tr>
+</tbody></table></div>
+<p><strong>On projective questions</strong> — "if it were an animal?", "imagine an ad" — the rule is specific: let it come, do not comment, do not validate. The only probe allowed is "why?". Any other intervention closes the imagination down instead of opening it up.</p>
+<h3 id="pacing">Pacing</h3>
+<ul>
+<li><strong>End of turn at 1.8–2.5 s of silence</strong>, versus the 0.05 s default at transcription providers. A participant asked for an analogy thinks before answering.</li>
+<li><strong>The bot can be interrupted; the bot never interrupts.</strong> An asymmetric, non-negotiable rule.</li>
+<li><strong>9 words per turn</strong> at the median. Measured on 2,306 turns by human interviewers on a single guide: 71% are 12 words or fewer, 26% have no verb, and <strong>none</strong> is spent saying "okay" or "great".</li>
+</ul>
+<h3 id="after">After</h3>
+<p>Three deliverables minimum: the transcript, attributed and timestamped; sequence-by-sequence coverage; and the structured captures. Lines displayed on screen must be <strong>flagged as such</strong> — a reader must be able to tell what was heard from what was read.</p>
+<hr>
+<h2 id="6-structured-captures">6. Structured captures</h2>
+<p>Anything that is a ranking, a choice, a rating or a price is not deduced from a transcript: it is <strong>captured</strong>. A widget, a value, a timestamp.</p>
+<p>It is also what makes the analysis trivial afterwards: the application knows which node was active at every millisecond, so linking a verbatim to a guide question is not inferred — it is <strong>known</strong>. Zero linking errors, versus a non-zero rate in any manual coding.</p>
+<hr>
+<h2 id="7-what-we-measure-in-every-interview">7. What we measure in every interview</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Indicator</th><th>What it reveals</th><th>Alert threshold</th></tr></thead>
+<tbody>
+<tr><td>Coverage per node</td><td>Whether the guide was followed</td><td>&lt; 70% of <code>must_cover</code></td></tr>
+<tr><td>Channel split</td><td>Whether the model improvises too much</td><td>&gt; 40% screen cards</td></tr>
+<tr><td>Diverted utterances</td><td>The model leaving the repertoire</td><td>&gt; 2 per sequence</td></tr>
+<tr><td>Type variety</td><td>Whether probing is going in circles</td><td>same type 3× in a row</td></tr>
+<tr><td>Median turn length</td><td>Whether the bot talks too much</td><td>&gt; 14 words</td></tr>
+<tr><td>Talk ratio</td><td>Who holds the floor</td><td>bot &gt; 30% of the time</td></tr>
+</tbody></table></div>
+<p>These six figures are enough to tell, without listening back, whether an interview is usable.</p>
+<hr>
+<h2 id="8-plugging-in-another-study">8. Plugging in another study</h2>
+<ol>
+<li>Write the guide in the §2 format. <strong>Write every probe</strong> — they are the voice repertoire.</li>
+<li>Define the <code>must_cover</code> items: atomic, verifiable, phrased as information to obtain, not as a question to ask.</li>
+<li>Write the <code>contraintes_noeud</code>: the prohibitions. It is the most important field, and the most often forgotten.</li>
+<li>Declare the stimuli and the captures.</li>
+<li>Record the fixed texts with a human voice if the budget allows — it is the biggest credibility gain per euro spent.</li>
+<li><strong>Run a calibration wave</strong> before any sale: a few interviews conducted in parallel by a human and by the bot, compared on the richness of the material — length of projective answers, number of spontaneous analogies, occurrences of tension and contradiction.</li>
+</ol>
+<p>The engine, the interface and the deliverables pipeline do not change. <strong>One study = one guide file.</strong></p>
+<hr>
+<h2 id="sources">Sources</h2>
+<ul>
+<li>Robinson, O. C. (2023). <em>Probing in qualitative research interviews: Theory and practice.</em> Qualitative Research in Psychology. <a href="https://gala.gre.ac.uk/id/eprint/44090/7/44090_ROBINSON_Probing_in_qualitative_research_interviews_Theory_and_practice.pdf" target="_blank" rel="noopener">Open-access version</a></li>
+<li><em>Probes and Probing</em>, in The SAGE Encyclopedia of Qualitative Research Methods.</li>
+<li>Chopra, F. &amp; Haaland, I. <em>Conducting Qualitative Interviews with AI</em> — 381 AI-led interviews.</li>
+<li><em>AInterviewer: A Platform for Designing and Conducting AI-led Qualitative Interviews</em>, ACL 2026 — separate-agent architecture (probing, classification, rephrasing).</li>
+<li>Internal corpus: 10 interviews from a single fieldwork, conducted by human interviewers, 2,306 turns measured.</li>
+</ul>
+</main>
+</body>
+</html>

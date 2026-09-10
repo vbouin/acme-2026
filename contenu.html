@@ -1,10 +1,12 @@
-<!-- Corps de la page « ACMÉ — Notre avenir ». Les sliders d'écrans et les
-     emplacements vidéo sont posés par build.py ({{slider:…}}, {{video:…}}) ;
-     ce fichier ne porte que le texte. -->
+<!-- Corps de la page « ACMÉ — Notre avenir » (français). build.py y pose les
+     sliders ({{slider:…}}), les vidéos ({{video:…}}), le préfixe des chemins
+     ({{p}}) et le lien vers l'autre langue ({{autre-langue}}).
+     Un bloc réservé à un public : <!--[client]-->…<!--[/client]-->
+     ou <!--[partenaires]-->…<!--[/partenaires]-->. Ce fichier ne porte que le texte. -->
 
 <header class="nav">
   <div class="container nav-inner">
-    <a class="nav-logo" href="#haut"><img src="assets/acme-noir-h.svg" alt="ACMÉ"></a>
+    <a class="nav-logo" href="#haut"><img src="{{p}}assets/acme-noir-h.svg" alt="ACMÉ"></a>
     <nav class="nav-links" aria-label="Sommaire">
       <a href="#verbatim">Verbatim</a>
       <a href="#preclinique">Pré-clinique</a>
@@ -14,6 +16,7 @@
       <a href="#decision">Décision rapide</a>
       <a href="#contact">Contact</a>
     </nav>
+    <a class="nav-lang" href="{{autre-langue}}" hreflang="en" lang="en" title="English version">EN</a>
   </div>
 </header>
 
@@ -23,9 +26,9 @@
   <div class="hero-film-voile"></div>
   <div class="container hero-film-texte">
     <div class="eyebrow">— ACMÉ · Notre avenir</div>
-    <h1 class="display">Ce que nous<br>changeons.</h1>
-    <p class="lead">Cinquante ans de terrain nous ont appris ce qui fait une bonne étude. Ce qui a
-      changé, c'est ce qu'on peut en faire ensuite, et à quelle vitesse.</p>
+    <h1 class="display">Nos investissements<br>dans le futur<br>du quali.</h1>
+    <p class="lead">Plus de quarante ans de terrain nous ont appris ce qui fait une bonne étude. Découvrez ce qui a
+      changé et ce qu'on peut faire plus vite.</p>
     <div class="hero-actions">
       <a class="btn btn--dark" href="#verbatim">Voir ce qui change <span class="ar">↓</span></a>
     </div>
@@ -80,9 +83,9 @@
   </div>
   {{video:verbatim}}
   <div class="container">
-    <div class="split">
-      <div class="split-media">{{slider:verbatim}}</div>
-      <div class="split-texte">
+    <div class="vitrine">{{slider:verbatim}}</div>
+    <div class="colonnes">
+      <div>
         <div class="lbl">Ce que vos équipes font avec</div>
         <ul class="puces">
           <li><b>Filtrer</b> par persona et par profil de recrutement : milieu, statut de cible, pays,
@@ -96,18 +99,29 @@
           <li><b>Revenir au guide, aux profils, aux transcriptions intégrales</b> le jour où une
             conclusion est contestée.</li>
         </ul>
-        <div class="stats">
+      </div>
+      <div>
+        <div class="stats stats--haut">
           <div><b>53</b><span>entretiens de deux heures, France et Allemagne</span></div>
           <div><b>2 027</b><span>verbatims reliés à leur source</span></div>
           <div><b>1 503</b><span>vérifiés mot à mot, les autres signalés</span></div>
           <div><b>1</b><span>fichier, hors connexion, sans compte</span></div>
         </div>
         <div class="actions">
-          <a class="btn btn--dark" href="demo/verbatim-nord.html">Ouvrir la démonstration Concept NORD <span class="ar">→</span></a>
-          <a class="btn" href="proposition/">La proposition détaillée <span class="ar">→</span></a>
+<!--[client]-->
+          <a class="btn btn--dark" href="{{p}}demo/verbatim-nord.html">Ouvrir la démonstration Concept NORD <span class="ar">→</span></a>
+<!--[/client]-->
+          <a class="btn" href="{{p}}proposition/index.html">La proposition détaillée <span class="ar">→</span></a>
         </div>
+<!--[client]-->
         <p class="cap">Démonstration sur un terrain réel de 53 entretiens, marque commanditaire et
           prénoms masqués, véhicule de démonstration fictif. À ouvrir sur ordinateur.</p>
+<!--[/client]-->
+<!--[partenaires]-->
+        <p class="cap">Écrans d'un terrain réel de 53 entretiens, marque commanditaire et prénoms masqués,
+          véhicule de démonstration fictif. La plateforme se parcourt en rendez-vous, sur ce terrain ou sur
+          l'un des vôtres.</p>
+<!--[/partenaires]-->
       </div>
     </div>
   </div>
@@ -126,9 +140,9 @@
   </div>
   {{video:preclinique}}
   <div class="container">
-    <div class="split split--inverse">
-      <div class="split-media">{{slider:preclinique}}</div>
-      <div class="split-texte">
+    <div class="vitrine">{{slider:preclinique}}</div>
+    <div class="colonnes">
+      <div>
         <div class="lbl">Comment ça marche</div>
         <ul class="puces">
           <li>Un premier passage mené par un bot, <b>en voix ou par écrit</b>, sur le profil, les
@@ -141,7 +155,9 @@
             le profil de chaque séance, les hypothèses de milieu avec leurs signaux.</li>
           <li>L'entretien humain <b>reprend là où l'autre s'arrête</b>, sur ce qui demande de l'écoute.</li>
         </ul>
-        <div class="lbl" style="margin-top:30px">Ce que ça change</div>
+      </div>
+      <div>
+        <div class="lbl">Ce que ça change</div>
         <ul class="puces">
           <li><b>Plus de terrain à budget égal</b>, ou le même terrain moins cher.</li>
           <li>Des entretiens plus denses : le consultant arrive avec le contexte déjà en main.</li>
@@ -151,7 +167,7 @@
           Il prépare le terrain, il ne le conduit pas. Une phase de calibration décide si le dispositif
           tient ; si elle échoue, on ne l'utilise pas.</p>
         <div class="actions">
-          <a class="btn" href="protocole/">Le protocole, écrit avant d'être automatisé <span class="ar">→</span></a>
+          <a class="btn" href="{{p}}protocole/index.html">Le protocole, écrit avant d'être automatisé <span class="ar">→</span></a>
         </div>
       </div>
     </div>
@@ -163,43 +179,75 @@
   <div class="container">
     <div class="section-head">
       <div class="eyebrow">— Nouveauté 03 · Nos livrables</div>
-      <h2 class="display">Des livrables<br>qui se parcourent.</h2>
+      <h2 class="display">Des livrables<br>plus interactifs.</h2>
       <p class="lead">Le rapport reste. Ce qui s'y ajoute, ce sont des formes que le PowerPoint ne sait
         pas prendre.</p>
     </div>
   </div>
   {{video:livrables}}
   <div class="container">
-    <div class="split">
-      <div class="split-media">{{slider:voyage}}</div>
-      <div class="split-texte">
+    <div class="forme">
+      <div class="forme-head">
         <div class="lbl">Forme 01</div>
         <h3 class="h3">L'étude racontée comme un voyage</h3>
-        <p>Une étude exploratoire ne se résume pas bien : son intérêt tient à l'enchaînement. Nous la
-          livrons alors comme un récit qui se déroule au défilement. Les scènes avancent, le véhicule
-          tourne, les chiffres se posent au bon moment.</p>
-        <ul class="puces">
-          <li>Vingt-huit scènes, un seul fil, aucune navigation à apprendre.</li>
-          <li>Les images du terrain à l'échelle où elles se lisent.</li>
-          <li>Un fichier unique, qui s'ouvre hors connexion.</li>
-        </ul>
-        <p class="cap">Étude exploratoire qualitative, cinq univers métier, trois marchés.</p>
+      </div>
+      <div class="vitrine">{{slider:voyage}}</div>
+      <div class="colonnes">
+        <div>
+          <p class="texte">Une étude exploratoire ne se résume pas bien : son intérêt tient à l'enchaînement.
+            Nous la livrons alors comme un récit qui se déroule au défilement. Les scènes avancent, le
+            véhicule tourne, les chiffres se posent au bon moment.</p>
+        </div>
+        <div>
+          <ul class="puces">
+            <li>Vingt-huit scènes, un seul fil, aucune navigation à apprendre.</li>
+            <li>Les images du terrain à l'échelle où elles se lisent.</li>
+            <li>Un fichier unique, qui s'ouvre hors connexion.</li>
+          </ul>
+          <p class="cap">Étude exploratoire qualitative, cinq univers métier, trois marchés.</p>
+        </div>
       </div>
     </div>
-    <div class="split split--inverse" style="margin-top:72px">
-      <div class="split-media">{{slider:semantique}}</div>
-      <div class="split-texte">
+
+    <div class="forme">
+      <div class="forme-head">
         <div class="lbl">Forme 02</div>
-        <h3 class="h3">Les champs sémantiques, par véhicule</h3>
-        <p>Les mots que les gens emploient pour parler d'une voiture ne sont pas les mêmes d'un modèle
-          à l'autre, ni d'un segment à l'autre. Regroupés, ils dessinent l'imaginaire attaché à chaque
-          véhicule, et ce qu'il faudrait déplacer pour le changer.</p>
-        <ul class="puces">
-          <li>Le vocabulaire regroupé par thème, et par véhicule de référence.</li>
-          <li>La balance adhésion / réserve, dimension par dimension.</li>
-          <li>Chaque mot reste relié au passage dont il vient.</li>
-        </ul>
-        <p class="cap">Les mots sont calculés sur le corpus réel ; l'écran, lui, reste à construire.</p>
+        <h3 class="h3">Les champs sémantiques, relus dans les entretiens</h3>
+      </div>
+      <div class="vitrine">{{slider:semantique}}</div>
+      <div class="colonnes">
+        <div>
+          <p class="texte">Les mots qu'on emploie pour parler d'une voiture changent d'une partie à l'autre,
+            d'un véhicule à l'autre, d'un terrain à l'autre. Nous relevons chaque qualificatif dans les
+            transcriptions intégrales, nous le rattachons à la partie du véhicule qu'il vise et à la
+            question du guide qui l'a fait naître, puis nous les regroupons en champs de sens.</p>
+          <ul class="puces">
+            <li><b>Chaque adjectif rattaché à sa partie</b> : la face avant, l'intérieur, le coffre, le
+              prix. Par la syntaxe quand la phrase le dit, par la question quand c'est elle qui le dit.</li>
+            <li><b>Des champs et leurs recoupements</b> : ce qui se dit « robuste » dehors se retrouve-t-il
+              dedans ? La promesse de l'extérieur tient-elle à l'intérieur ?</li>
+            <li><b>Le concept face aux concurrents de la salle</b>, champ par champ, et selon que la
+              personne achète ou non.</li>
+            <li><b>Deux types d'entretien comparés</b> : une clinique grand public sur un SUV compact, un
+              exploratoire professionnel sur une fourgonnette.</li>
+          </ul>
+        </div>
+        <div>
+          <div class="stats stats--haut">
+            <div><b>{{sem-occ}}</b><span>qualificatifs relevés et rattachés</span></div>
+            <div><b>{{sem-itw}}</b><span>entretiens, deux terrains, deux véhicules</span></div>
+            <div><b>{{sem-champs}}</b><span>champs sémantiques</span></div>
+            <div><b>{{sem-parties}}</b><span>parties du véhicule suivies</span></div>
+          </div>
+<!--[client]-->
+          <div class="actions">
+            <a class="btn btn--dark" href="{{p}}demo/champs-semantiques.html">Ouvrir l'outil <span class="ar">→</span></a>
+          </div>
+<!--[/client]-->
+          <p class="cap">Analyse linguistique automatique, relue : chaque rattachement porte son niveau de
+            preuve, et chaque mot reste relié à sa phrase. Terrains anonymisés.<!--[partenaires]--> L'outil
+            se parcourt en rendez-vous.<!--[/partenaires]--></p>
+        </div>
       </div>
     </div>
   </div>
@@ -212,20 +260,25 @@
       <div class="eyebrow">— Nouveauté 04 · Nouveau terrain</div>
       <h2 class="display">Ce que disent<br>les créateurs.</h2>
       <p class="lead">Sur un lancement automobile, la parole qui compte n'est plus seulement celle de la
-        presse ni celle du panel. Elle est dans soixante vidéos de créateurs, dans neuf marchés, et
-        personne ne les regarde toutes.</p>
+        presse ni celle du panel. Elle est dans des dizaines de vidéos de créateurs, dans neuf marchés, et
+        personne ne les regarde toutes. Nous, si : en entier, transcription comprise.</p>
     </div>
   </div>
   {{video:createurs}}
   <div class="container">
-    <div class="split">
-      <div class="split-media">{{slider:createurs}}</div>
-      <div class="split-texte">
+    <div class="vitrine">{{slider:createurs}}</div>
+    <div class="colonnes">
+      <div>
         <div class="lbl">Le dispositif</div>
         <ul class="puces">
-          <li><b>62 vidéos de créateurs</b> analysées, sur 9 marchés, dont la Chine.</li>
-          <li>Croisées avec les études consommateurs : ce que dit le panel, ce que dit le créateur.</li>
-          <li>Une synthèse par véhicule, et une lecture dimension par dimension.</li>
+          <li><b>Chaque vidéo retrouvée sur sa page</b> : titre, chaîne, date vérifiés. Les vues et
+            l'engagement sont relevés quand la plateforme les donne, estimés sinon, et toujours signalés
+            comme tels.</li>
+          <li><b>Chaque vidéo s'ouvre sur sa transcription</b>, face à ce que dit l'étude consommateurs
+            sur le même point.</li>
+          <li><b>Les commentaires captés</b>, traduits, classés par thème et par tonalité.</li>
+          <li><b>Une lecture dimension par dimension</b> : prix, identité, intérieur, concurrence ; alignée,
+            partielle ou divergente.</li>
           <li>Livré comme un film : le récit d'abord, les tableaux ensuite.</li>
         </ul>
         <div class="lbl" style="margin-top:30px">Pour quoi faire</div>
@@ -234,13 +287,22 @@
           <li>Savoir quel argument voyage d'un marché à l'autre, et lequel s'arrête à la frontière.</li>
           <li>Choisir avec qui travailler sur la base de ce qui est dit, pas d'une audience.</li>
         </ul>
-        <p class="cap">Marque et modèles retirés pour cette présentation.</p>
+      </div>
+      <div>
+        <div class="lbl">Déjà traité</div>
+        <div class="stats stats--haut">
+          <div><b>62</b><span>vidéos de créateurs sur un lancement, neuf marchés</span></div>
+          <div><b>{{alp-autres}}</b><span>vidéos de plus sur un marché lointain, même procédé</span></div>
+          <div><b>{{sh-videos}}</b><span>vidéos vérifiées une à une, sur les concurrents d'une clinique</span></div>
+          <div><b>191</b><span>essais d'un même créateur, transcrits et notés section par section</span></div>
+        </div>
+        <p class="cap">Marque et modèles floutés pour cette présentation.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ═══════════════ 05 — SHOWROOM (nouveau terrain) ═══════════════ -->
+<!-- ═══════════════ 05 — SHOWROOM ═══════════════ -->
 <section class="section section--off nouveaute" id="showroom">
   <div class="container">
     <div class="section-head">
@@ -250,6 +312,7 @@
         refuge d'un type de refus. Nous confrontons ce que la salle en a dit à ce qu'en dit le
         marché : avis clients, presse, créateurs, ventes.</p>
     </div>
+<!--[client]-->
     <div class="split split--inverse">
       <div class="split-media">
         <div class="regarder" style="margin-top:0">
@@ -270,15 +333,40 @@
           <li>Chaque chiffre porte son statut, vérifié, estimé ou absent : jamais reconstitué.</li>
         </ul>
         <div class="actions">
-          <a class="btn btn--dark" href="reserve/showroom.html">Ouvrir avec le code <span class="ar">→</span></a>
+          <a class="btn btn--dark" href="{{p}}reserve/showroom.html">Ouvrir avec le code <span class="ar">→</span></a>
         </div>
       </div>
     </div>
+<!--[/client]-->
+<!--[partenaires]-->
+    <div class="vitrine">{{slider:showroom}}</div>
+    <div class="colonnes">
+      <div>
+        <div class="lbl">Ce que le dashboard confronte</div>
+        <ul class="puces">
+          <li><b>Le regard interne</b> : les classements explicites lus dans les transcripts,
+            entretien par entretien.</li>
+          <li><b>Le regard externe</b> : vidéos de créateurs vérifiées une à une, avis clients sur
+            une dizaine de sources, presse, ventes et prix.</li>
+          <li><b>Un alignement mesuré</b>, dimension par dimension, concurrent par concurrent : où
+            la salle et le marché se rejoignent, où ils divergent.</li>
+          <li>Chaque chiffre porte son statut, vérifié, estimé ou absent : jamais reconstitué.</li>
+        </ul>
+      </div>
+      <div>
+        <div class="regarder" style="margin-top:0">
+          <b>Écrans floutés</b>
+          Ce dashboard a été produit pour un client, sur un concept confidentiel : les noms des véhicules
+          et de la marque sont floutés. Le document complet se présente en rendez-vous.
+        </div>
+      </div>
+    </div>
+<!--[/partenaires]-->
   </div>
 </section>
 
-<!-- ═══════════════ 05 — DÉCISION RAPIDE ═══════════════ -->
-<section class="section section--off nouveaute" id="decision">
+<!-- ═══════════════ 06 — DÉCISION RAPIDE ═══════════════ -->
+<section class="section nouveaute" id="decision">
   <div class="container">
     <div class="section-head">
       <div class="eyebrow">— Nouveauté 06 · L'offre courte</div>
@@ -309,7 +397,7 @@
           <li>Le chiffrage arrive sous 48 heures, calé sur votre question.</li>
         </ul>
         <div class="actions">
-          <a class="btn btn--dark" href="decision/index.html">Ouvrir avec le code <span class="ar">→</span></a>
+          <a class="btn btn--dark" href="{{p}}decision/index.html">Ouvrir avec le code <span class="ar">→</span></a>
         </div>
       </div>
     </div>
@@ -317,7 +405,7 @@
 </section>
 
 <!-- ═══════════════ NOTRE LOGICIEL, NOS SERVEURS ═══════════════ -->
-<section class="section nouveaute" id="serveurs">
+<section class="section section--off nouveaute" id="serveurs">
   <div class="container">
     <div class="section-head">
       <div class="eyebrow">— Études &amp; IA</div>
@@ -353,7 +441,7 @@
 </section>
 
 <!-- ═══════════════ IMPACT ═══════════════ -->
-<section class="section section--off">
+<section class="section">
   <div class="container">
     <div class="section-head">
       <div class="eyebrow">— Impact pour vous</div>
@@ -381,7 +469,9 @@
     </div>
     <div class="actions">
       <a class="btn btn--light" href="https://vbouin.github.io/acme-site/v5.2/contact.html" target="_blank" rel="noopener">Démarrer un projet <span class="ar">→</span></a>
-      <a class="btn btn--light" href="demo/verbatim-nord.html">Revoir la démonstration <span class="ar">→</span></a>
+<!--[client]-->
+      <a class="btn btn--light" href="{{p}}demo/verbatim-nord.html">Revoir la démonstration <span class="ar">→</span></a>
+<!--[/client]-->
     </div>
   </div>
 </section>
@@ -390,12 +480,13 @@
 <footer class="pied">
   <div class="container pied-inner">
     <div>
-      <img src="assets/acme-blanc-h.svg" alt="ACMÉ">
-      <p>Cinquante ans dans la connaissance client · 24 rue Turbil, 69003 Lyon</p>
+      <img src="{{p}}assets/acme-blanc-h.svg" alt="ACMÉ">
+      <p>Plus de quarante ans dans la connaissance client · 24 rue Turbil, 69003 Lyon</p>
     </div>
     <div>
       <p>Document de présentation. Les corpus montrés sont anonymisés : marque commanditaire et
-        prénoms masqués, véhicule de démonstration fictif.</p>
+        prénoms masqués, véhicule de démonstration fictif.<!--[partenaires]--> Sur les écrans produits pour un
+        client, ce qui l'identifierait est flouté.<!--[/partenaires]--></p>
       <span class="mono">{{date}}</span>
     </div>
   </div>

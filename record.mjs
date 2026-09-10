@@ -10,7 +10,7 @@
 // Un curseur dessiné est injecté dans la page et se déplace avant chaque clic :
 // sans lui, une vidéo d'interface ne se lit pas.
 import { spawn, execFileSync } from 'node:child_process';
-import { writeFileSync, mkdirSync, rmSync, existsSync } from 'node:fs';
+import { writeFileSync, mkdirSync, rmSync, existsSync, statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -26,23 +26,84 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 // ---------------------------------------------------------------- injection
 // Curseur + défilement piloté + masquage des marques (nœuds de texte seulement).
-function injection(mask, hide, pre) {
+// `flou` : des mots à rendre illisibles — chaque occurrence est remplacée par des
+// lettres quelconques de même longueur, puis floutée (le flou ne cache rien si le
+// vrai mot reste dessous). `flouSel` : des éléments entiers à flouter (photos,
+// logos, vignettes).
+function injection(mask, hide, pre, flou, flouSel, exact) {
   return `
 (() => {
   if (window.__acmeInjected) return; window.__acmeInjected = true;
   try { ${pre || ''} } catch (e) {}
   const T = ${JSON.stringify(mask || {})}, H = ${JSON.stringify(hide || [])};
+  const F = ${JSON.stringify(flou || [])}, FS = ${JSON.stringify(flouSel || [])};
+  // « exact » : remplacements réservés à un texte entier (libellé court, valeur de champ), jamais en sous-chaîne
+  const X = ${JSON.stringify(exact || {})}, aX = k => Object.prototype.hasOwnProperty.call(X, k);
   const cles = Object.keys(T).sort((a, b) => b.length - a.length);
+  const echap = s => s.replace(/[.*+?^\${}()|[\\]\\\\]/g, '\\\\$&');
+  const SVG = 'http://www.w3.org/2000/svg';
+  const brouiller = t => t.replace(/[A-Za-zÀ-ÿ]/g, c => (c === c.toUpperCase() ? 'M' : 'n')).replace(/[0-9]/g, '8');
+  // les formes déjà brouillées sont floutées aussi : une page qui recopie un texte
+  // traité (textContent d'une carte vers une modale) ne garde que les lettres, pas le flou
+  const FF = F.concat(F.map(brouiller).filter(x => x.length > 3));
+  const rxF = FF.length ? new RegExp('(' + [...new Set(FF)].sort((a, b) => b.length - a.length).map(echap).join('|') + ')', 'g') : null;
+  function styleFlou() {
+    if (document.getElementById('__flou-css') || !document.head) return;
+    const s = document.createElement('style'); s.id = '__flou-css';
+    s.textContent = '.__flou{filter:blur(.3em);-webkit-filter:blur(.3em);display:inline-block;user-select:none}' +
+      '.__flou-svg{filter:blur(3.5px)}' + (FS.length ? FS.join(',') + '{filter:blur(18px) saturate(.3) !important}' : '');
+    document.head.appendChild(s);
+  }
+  function flouter() {
+    if (!document.body) return;
+    styleFlou();
+    if (!rxF) return;
+    const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); const lot = []; let n;
+    while ((n = w.nextNode())) {
+      const p = n.parentNode; if (!p) continue;
+      if (p.id === '__cur' || /^(SCRIPT|STYLE|TEXTAREA)$/.test(p.nodeName) || (p.classList && p.classList.contains('__flou'))) continue;
+      rxF.lastIndex = 0; if (rxF.test(n.nodeValue)) lot.push(n);
+    }
+    lot.forEach(n => {
+      const p = n.parentNode;
+      if (p.namespaceURI === SVG) {
+        // une seule fois par nœud : réécrire une valeur identique relance l'observateur, sans fin
+        if (p.classList.contains('__flou-svg')) return;
+        rxF.lastIndex = 0; const v = n.nodeValue.replace(rxF, m => brouiller(m));
+        if (v !== n.nodeValue) n.nodeValue = v;
+        p.classList.add('__flou-svg'); return;
+      }
+      const frag = document.createDocumentFragment();
+      n.nodeValue.split(rxF).forEach((morceau, i) => {
+        if (i % 2) { const s = document.createElement('span'); s.className = '__flou'; s.textContent = brouiller(morceau); frag.appendChild(s); }
+        else if (morceau) frag.appendChild(document.createTextNode(morceau));
+      });
+      p.replaceChild(frag, n);
+    });
+    document.querySelectorAll('[alt],[title],[aria-label]').forEach(e => ['alt', 'title', 'aria-label'].forEach(a => {
+      const x = e.getAttribute(a); if (!x) return; rxF.lastIndex = 0; if (rxF.test(x)) { rxF.lastIndex = 0; e.setAttribute(a, x.replace(rxF, m => brouiller(m))); }
+    }));
+  }
   function passe() {
+    flouter();
     H.forEach(s => { try { document.querySelectorAll(s).forEach(e => e.remove()); } catch (e) {} });
     if (!cles.length || !document.body) return;
     const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); let n;
     while ((n = w.nextNode())) {
       if (n.parentNode && n.parentNode.id === '__cur') continue;
       let v = n.nodeValue, o = v;
-      cles.forEach(k => { if (v.indexOf(k) >= 0) v = v.split(k).join(T[k]); });
+      const nu = v.trim(); if (nu && aX(nu)) { n.nodeValue = v.replace(nu, X[nu]); continue; }
+      // deux passes : une clé longue (traduction) peut ne correspondre qu'après le masquage des marques
+      for (let tour = 0; tour < 2; tour++) cles.forEach(k => { if (v.indexOf(k) >= 0) v = v.split(k).join(T[k]); });
       if (v !== o) n.nodeValue = v;
     }
+    // les valeurs des champs de formulaire ne sont pas des nœuds de texte : même traitement
+    document.querySelectorAll('input:not([type=password]), textarea').forEach(e => {
+      if (e.id === 'write' || !e.value) return;
+      let v = e.value; const o = v, nu = v.trim();
+      if (aX(nu)) v = X[nu]; else cles.forEach(k => { if (v.indexOf(k) >= 0) v = v.split(k).join(T[k]); });
+      if (v !== o) e.value = v;
+    });
     document.querySelectorAll('[placeholder],[alt],[title],[aria-label]').forEach(e => {
       ['placeholder', 'alt', 'title', 'aria-label'].forEach(a => {
         let x = e.getAttribute(a); if (!x) return; const o = x;
@@ -73,7 +134,12 @@ function injection(mask, hide, pre) {
   // suit (le contenu chargé ensuite par l'application restait non masqué).
   function armer() {
     passe(); curseur();
-    try { new MutationObserver(() => passe()).observe(document.documentElement, { childList: true, subtree: true, characterData: true }); } catch (e) {}
+    // passe différée : appelée en microtâche à chaque mutation, elle affamait la
+    // boucle d'événements d'une page qui se redessine (la page profil) — plus
+    // rien ne répondait, pas même le pilotage.
+    let attente = 0;
+    try { new MutationObserver(() => { if (!attente) attente = setTimeout(() => { attente = 0; passe(); }, 40); })
+      .observe(document.documentElement, { childList: true, subtree: true, characterData: true }); } catch (e) {}
     setInterval(passe, 400);
   }
   if (document.readyState !== 'loading') armer(); else document.addEventListener('DOMContentLoaded', armer);
@@ -135,6 +201,12 @@ async function ouvrirChrome(port, w, h) {
 // ---------------------------------------------------------------- assemblage
 function assembler(frames, t0, t1, sortie) {
   if (!frames.length) { console.log('   ⚠ aucune image de screencast'); return; }
+  // Les premières images arrivent avant que la page ne se peigne : de l'écran noir,
+  // qui ouvrait chaque vidéo sur plusieurs secondes vides. Une image d'interface
+  // pèse bien plus lourd qu'un aplat : on saute celles qui sont trop légères.
+  let debut = 0;
+  while (debut < frames.length - 1 && statSync(frames[debut].file).size < 20000) debut++;
+  if (debut) { frames.splice(0, debut); t0 = Math.max(t0, frames[0].t); }
   const ticks = Math.max(1, Math.round((t1 - t0) * FPS));
   let j = 0; const lignes = [];
   for (let k = 0; k < ticks; k++) {
@@ -162,13 +234,13 @@ async function jouer(nom) {
   if (serveur) await attendrePort(port);
   const { chrome, page, profil } = await ouvrirChrome(cdpPort, w, h);
   const tmp = join(tmpdir(), 'acme-frames-' + nom + '-' + process.pid); mkdirSync(tmp, { recursive: true });
-  const frames = []; let rec = false, tDebut = 0, tFin = 0;
+  const frames = []; let rec = false, tDebut = 0, tFin = 0; const textes = new Set();
   const tmpPng = join(tmp, 'shot.png');
   mkdirSync(SHOTS, { recursive: true });
   try {
     await page.send('Page.enable'); await page.send('Runtime.enable');
     await page.send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: 1, mobile: false });
-    await page.send('Page.addScriptToEvaluateOnNewDocument', { source: injection(sc.mask, sc.hide, sc.pre) });
+    await page.send('Page.addScriptToEvaluateOnNewDocument', { source: injection(sc.mask, sc.hide, sc.pre, sc.flou, sc.flouSel, sc.maskExact) });
     page.on('Page.screencastFrame', p => {
       const f = join(tmp, String(frames.length).padStart(5, '0') + '.jpg');
       writeFileSync(f, Buffer.from(p.data, 'base64'));
@@ -239,30 +311,52 @@ async function jouer(nom) {
         // `clip` : une zone de l'écran, prise à 2× — un composant d'interface
         // se lit ; un plein écran réduit dans une carte, non. Soit un rectangle
         // [x, y, l, h] en pixels CSS de la fenêtre, soit un sélecteur (+ marge).
+        // `ratio` : la zone est agrandie autour de son centre jusqu'au format voulu
+        // (1.5 = 3:2), en gardant du contexte plutôt qu'en ajoutant des bandes.
+        // `hd` (scénario) : sans zone, la fenêtre entière est prise à 2×.
         const params = { format: 'png' };
         if (st.clip) {
           let r;
           if (Array.isArray(st.clip)) r = { x: st.clip[0], y: st.clip[1], w: st.clip[2], h: st.clip[3] };
           else r = await page.eval(`(function(){const e=document.querySelectorAll(${JSON.stringify(st.clip)})[${st.nth ?? 0}];if(!e)return null;const b=e.getBoundingClientRect();const p=${st.pad ?? 0};return {x:b.left-p,y:b.top-p,w:b.width+2*p,h:b.height+2*p};})()`);
           if (!r) { console.log(`   ⚠ zone introuvable : ${st.clip}`); continue; }
+          const R = st.ratio ?? sc.ratio;
+          if (R) {
+            if (r.w / r.h > R) { const nh = r.w / R; r.y -= (nh - r.h) / 2; r.h = nh; } else { const nw = r.h * R; r.x -= (nw - r.w) / 2; r.w = nw; }
+            if (r.w > w) { r.w = w; r.h = w / R; }
+            if (r.h > h) { r.h = h; r.w = h * R; }
+            r.x = Math.min(Math.max(0, r.x), w - r.w); r.y = Math.min(Math.max(0, r.y), h - r.h);
+          }
           const sx = await page.eval('scrollX'), sy = await page.eval('scrollY');
           params.clip = { x: Math.max(0, r.x) + sx, y: Math.max(0, r.y) + sy, width: Math.min(r.w, w - Math.max(0, r.x)), height: Math.min(r.h, h - Math.max(0, r.y)), scale: 2 };
           params.captureBeyondViewport = true;
+        } else if (sc.hd) {
+          const sx = await page.eval('scrollX'), sy = await page.eval('scrollY');
+          params.clip = { x: sx, y: sy, width: w, height: h, scale: 2 };
         }
         const s = await page.send('Page.captureScreenshot', params);
         writeFileSync(tmpPng, Buffer.from(s.data, 'base64'));
         const cible = join(SHOTS, st.shot + '.jpg');
-        const largeur = st.clip ? Math.min(1600, Math.round(params.clip.width * 2)) : LARGEUR_IMAGE;
+        mkdirSync(dirname(cible), { recursive: true });
+        const largeur = params.clip ? Math.min(1800, Math.round(params.clip.width * 2)) : LARGEUR_IMAGE;
         execFileSync('ffmpeg', ['-v', 'error', '-y', '-i', tmpPng, '-vf', `scale=${largeur}:-2:flags=lanczos`, '-q:v', '3', cible]);
-        console.log(`   ✓ ${st.shot}.jpg${st.clip ? ' (zone 2×)' : ''}`);
+        console.log(`   ✓ ${st.shot}.jpg${st.clip ? ' (zone 2×)' : sc.hd ? ' (fenêtre 2×)' : ''}`);
         await page.eval('(function(){const c=document.getElementById("__cur");if(c)c.style.opacity="1";})()');
+      } else if (st.collect !== undefined) {
+        // relevé des textes visibles (pour préparer une traduction de l'interface)
+        const t = await page.eval(`(function(){const o=[];const w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let n;while((n=w.nextNode())){const p=n.parentNode;if(!p||/^(SCRIPT|STYLE|TEXTAREA)$/.test(p.nodeName)||p.id==='__cur')continue;const v=n.nodeValue.trim();if(v&&/[A-Za-zÀ-ÿ]/.test(v))o.push(v);}document.querySelectorAll('[placeholder],[title],[aria-label]').forEach(e=>['placeholder','title','aria-label'].forEach(a=>{const v=(e.getAttribute(a)||'').trim();if(v&&/[A-Za-zÀ-ÿ]/.test(v))o.push(v)}));return o;})()`);
+        (t || []).forEach(x => textes.add(x));
       } else if (st.rec !== undefined) {
         if (st.rec) await startRec(); else { tFin = await now(); await stopRec(); }
       }
     }
     if (rec) { tFin = await now(); await stopRec(); }
+    if (textes.size) {
+      const f = join(SHOTS, '_ctl', nom + '-textes.json'); mkdirSync(dirname(f), { recursive: true });
+      writeFileSync(f, JSON.stringify([...textes], null, 1)); console.log(`   ✓ ${textes.size} textes relevés → shots/_ctl/${nom}-textes.json`);
+    }
     if (sc.video && frames.length) {
-      const sortie = join(SHOTS, sc.video + '.mp4');
+      const sortie = join(SHOTS, sc.video + '.mp4'); mkdirSync(dirname(sortie), { recursive: true });
       const t0 = tDebut || frames[0].t, t1 = tFin || frames[frames.length - 1].t + 1 / FPS;
       assembler(frames, Math.min(t0, frames[0].t), Math.max(t1, frames[frames.length - 1].t), sortie);
       const ko = Math.round(execFileSync('stat', ['-f', '%z', sortie]).toString() / 1024);

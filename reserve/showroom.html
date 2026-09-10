@@ -17,34 +17,52 @@
     <h1>Showroom Intelligence — cinq concurrents face au concept</h1>
     <p>Clinique de juin 2026 : ce que la salle a dit des concurrents, confronté au marché. Document confidentiel, comptes et véhicules nommés. Fichier lourd, le déchiffrement prend quelques secondes.</p>
     <form id="form" class="gate-form" autocomplete="off">
-      <input id="pw" type="password" placeholder="Code d'accès" aria-label="Code d'accès" autocomplete="off" required>
+      <input id="pw" type="password" placeholder="Code d&#x27;accès" aria-label="Code d&#x27;accès" autocomplete="off" required>
       <button id="btn" type="submit" class="btn btn--light">Déverrouiller</button>
     </form>
     <div id="err" class="gate-err" aria-live="polite"></div>
   </div>
 </div>
-<div class="gate-pied"><span>Le contenu est chiffré dans le fichier servi ; il ne se lit qu'avec le code. <a href="../index.html#showroom" style="color:inherit">Retour à la page</a></span></div>
+<div class="gate-pied"><span>Le contenu est chiffré dans le fichier servi ; il ne se lit qu&#x27;avec le code. <a href="../index.html#showroom" onclick="if(document.referrer&&document.referrer.indexOf(location.origin)===0){history.back();return false}" style="color:inherit">Retour à la page</a></span></div>
 <script>
-const FICHIER = "showroom.bin", ITER = 250000, CLE = 'acme2026-code';
+const FICHIER = "showroom.bin", ITER = 250000, CLE = 'acme2026-code', TXT = {"encours": "Déchiffrement…", "faux": "Code incorrect.", "ouvrir": "Déverrouiller"};
+let BUF = null;
+async function charger() {
+  if (!BUF) { const r = await fetch(FICHIER, { cache: 'no-store' }); if (!r.ok) throw new Error('absent'); BUF = new Uint8Array(await r.arrayBuffer()); }
+  return BUF;
+}
+async function derive(code, sel) {
+  const km = await crypto.subtle.importKey('raw', new TextEncoder().encode(code), { name: 'PBKDF2' }, false, ['deriveKey']);
+  return crypto.subtle.deriveKey({ name: 'PBKDF2', salt: sel, iterations: ITER, hash: 'SHA-256' }, km, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+}
 async function dechiffrer(code) {
-  const buf = new Uint8Array(await (await fetch(FICHIER, { cache: 'no-store' })).arrayBuffer());
-  const salt = buf.slice(0, 16), iv = buf.slice(16, 28), ct = buf.slice(28);
-  const enc = new TextEncoder();
-  const km = await crypto.subtle.importKey('raw', enc.encode(code), { name: 'PBKDF2' }, false, ['deriveKey']);
-  const key = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations: ITER, hash: 'SHA-256' }, km, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
-  const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ct);
-  return new TextDecoder().decode(pt);
+  const b = await charger(), dec = new TextDecoder();
+  if (b[0] === 65 && b[1] === 67 && b[2] === 77 && b[3] === 50) {
+    const n = b[4]; let pos = 5, cek = null;
+    for (let k = 0; k < n && !cek; k++, pos += 76) {
+      try {
+        const kek = await derive(code, b.slice(pos, pos + 16));
+        const brute = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b.slice(pos + 16, pos + 28) }, kek, b.slice(pos + 28, pos + 76));
+        cek = await crypto.subtle.importKey('raw', brute, { name: 'AES-GCM' }, false, ['decrypt']);
+      } catch (e) {}
+    }
+    if (!cek) throw new Error('code');
+    const d = 5 + 76 * n;
+    return dec.decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b.slice(d, d + 12) }, cek, b.slice(d + 12)));
+  }
+  const kek = await derive(code, b.slice(0, 16));          // ancien format : un seul code
+  return dec.decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b.slice(16, 28) }, kek, b.slice(28)));
 }
 const form = document.getElementById('form'), pw = document.getElementById('pw'), btn = document.getElementById('btn'), err = document.getElementById('err');
 async function ouvrir(code, silencieux) {
-  btn.disabled = true; btn.textContent = 'Déchiffrement…'; err.textContent = '';
+  btn.disabled = true; btn.textContent = TXT.encours; err.textContent = '';
   try {
     const html = await dechiffrer(code);
     try { sessionStorage.setItem(CLE, code); } catch (e) {}
     document.open(); document.write(html); document.close();
   } catch (e) {
-    if (!silencieux) err.textContent = 'Code incorrect.';
-    btn.disabled = false; btn.textContent = 'Déverrouiller';
+    if (!silencieux) err.textContent = TXT.faux;
+    btn.disabled = false; btn.textContent = TXT.ouvrir;
   }
 }
 form.addEventListener('submit', e => { e.preventDefault(); ouvrir(pw.value.trim(), false); });
